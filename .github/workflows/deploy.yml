@@ -25,8 +25,16 @@ jobs:
         run: |
           python app/main.py
 
-      - name: Salvar artefato gerado (HTML)
-        uses: actions/upload-artifact@v3
-        with:
-          name: pagina-estatica
-          path: output/
+      - name: Configurar Git para deploy
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Criar a branch gh-pages e fazer push do HTML
+        run: |
+          git checkout --orphan gh-pages
+          git rm -rf .
+          mv output/* .  # Move o conteúdo de output para a raiz da branch gh-pages
+          git add .
+          git commit -m "Deploy da página estática"
+          git push origin gh-pages --force
