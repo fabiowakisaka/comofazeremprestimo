@@ -1,0 +1,32 @@
+name: Gerar página estática
+
+on:
+  push:
+    branches: [ "main" ]  # ou "master", dependendo do nome do seu branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências
+        run: |
+          pip install -r app/requirements.txt
+
+      - name: Rodar script Python
+        run: |
+          python app/main.py
+
+      - name: Salvar artefato gerado (HTML)
+        uses: actions/upload-artifact@v3
+        with:
+          name: pagina-estatica
+          path: output/
