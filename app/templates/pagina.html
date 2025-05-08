@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Produtos Interessantes</title>
+    <title>{{ titulo }}</title>
 </head>
 <body>
-    <h1>Produtos Recomendados - {{ data }}</h1>
-    <ul>
-    {% for produto in produtos %}
-        <li>
-            <a href="{{ produto.link }}">{{ produto.nome }}</a> - {{ produto.preco }}
-        </li>
-    {% endfor %}
-    </ul>
+    <h1>{{ titulo }}</h1>
+    <p>Confira este produto incrível na Amazon!</p>
+    <a href="https://www.amazon.com.br/dp/B08CFSZLQ4" target="_blank">Ver na Amazon</a>
 </body>
 </html>
