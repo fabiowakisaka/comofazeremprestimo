@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Produtos Interessantes</title>
+</head>
+<body>
+    <h1>Produtos Recomendados - {{ data }}</h1>
+    <ul>
+    {% for produto in produtos %}
+        <li>
+            <a href="{{ produto.link }}">{{ produto.nome }}</a> - {{ produto.preco }}
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
