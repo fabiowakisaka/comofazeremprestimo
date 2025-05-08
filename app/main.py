@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
-# Exemplo de scraping de um título de página
+# Exemplo de scraping de um título de página #
 url = 'https://www.amazon.com.br/dp/B08CFSZLQ4'  # Exemplo: Echo Dot
 headers = {"User-Agent": "Mozilla/5.0"}
 
