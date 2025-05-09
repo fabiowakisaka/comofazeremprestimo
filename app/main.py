@@ -1,28 +1,19 @@
+import json
 import os
-import requests
-from bs4 import BeautifulSoup
-from jinja2 import Environment, FileSystemLoader
 
-# Exemplo de scraping de um título de página #
-url = 'https://www.amazon.com.br/dp/B08CFSZLQ4'  # Exemplo: Echo Dot
-headers = {"User-Agent": "Mozilla/5.0"}
+# Caminho para o payload
+payload_path = os.path.join(os.getcwd(), 'payload.json')
 
-response = requests.get(url, headers=headers)
-soup = BeautifulSoup(response.content, 'html.parser')
+# Carregar o payload
+if os.path.exists(payload_path):
+    with open(payload_path, 'r', encoding='utf-8') as f:
+        payload = json.load(f)
+        termo = payload.get("termo", "termo_padrao")  # chave que você mandou do JS
+        print(f"Gerando página para o termo: {termo}")
+else:
+    termo = "termo_padrao"
+    print("payload.json não encontrado. Usando termo padrão.")
 
-# Extrai o título da página como exemplo
-titulo = soup.title.string.strip() if soup.title else "Produto sem título"
-
-# Carrega o template HTML com Jinja2
-env = Environment(loader=FileSystemLoader('templates'))
-template = env.get_template('pagina.html')
-
-# Gera a página preenchida
-html_gerado = template.render(titulo=titulo)
-
-# Salva o HTML no diretório de saída
-os.makedirs('output', exist_ok=True)
-with open('output/index.html', 'w', encoding='utf-8') as f:
-    f.write(html_gerado)
-
-print("Página gerada com sucesso.")
+# Aqui você faz o processamento e geração do HTML com o termo
+with open(f"output/{termo}.html", "w", encoding="utf-8") as f:
+    f.write(f"<html><body><h1>Informações sobre {termo}</h1></body></html>")
