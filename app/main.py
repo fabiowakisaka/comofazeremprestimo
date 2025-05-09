@@ -1,33 +1,32 @@
-# app/main.py
-import sys
+from flask import Flask, request, jsonify
 import os
 
-# Pega o termo passado como argumento
-termo = sys.argv[1] if len(sys.argv) > 1 else "produto-desconhecido"
-print(f"Gerando página para: {termo}")
+app = Flask(__name__)
 
-# Garante que a pasta 'output' existe
-output_dir = "output"
-os.makedirs(output_dir, exist_ok=True)
+@app.route('/gerar-pagina', methods=['POST'])
+def gerar_pagina():
+    termo = request.json.get('termo', '')  # Recebe o termo via JSON
 
-# Gera HTML básico com o termo
-html_content = f"""
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Sobre {termo}</title>
-</head>
-<body>
-    <h1>Informações sobre {termo}</h1>
-    <p>Esta é uma página gerada automaticamente para o produto: <strong>{termo}</strong>.</p>
-</body>
-</html>
-"""
+    # Aqui você pode adicionar a lógica de machine learning ou outro processamento
+    # Exemplo: Vamos apenas gerar uma página simples com o termo fornecido
+    pagina_html = f"""
+    <html>
+        <head><title>{termo}</title></head>
+        <body>
+            <h1>Resultado para {termo}</h1>
+            <p>Esta é a página gerada com base no termo: {termo}</p>
+        </body>
+    </html>
+    """
 
-# Salva no arquivo output/{termo}.html
-output_file = os.path.join(output_dir, f"{termo}.html")
-with open(output_file, "w", encoding="utf-8") as f:
-    f.write(html_content)
+    # Salva o arquivo HTML gerado
+    output_dir = 'output'
+    os.makedirs(output_dir, exist_ok=True)
+    file_path = os.path.join(output_dir, f'{termo}.html')
+    with open(file_path, 'w') as file:
+        file.write(pagina_html)
 
-print(f"Página criada com sucesso em: {output_file}")
+    return jsonify({"message": "Página gerada com sucesso!", "url": f"/{file_path}"}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
