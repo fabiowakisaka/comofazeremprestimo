@@ -1,19 +1,33 @@
-import json
+# app/main.py
+import sys
 import os
 
-# Caminho para o payload
-payload_path = os.path.join(os.getcwd(), 'payload.json')
+# Pega o termo passado como argumento
+termo = sys.argv[1] if len(sys.argv) > 1 else "produto-desconhecido"
+print(f"Gerando página para: {termo}")
 
-# Carregar o payload
-if os.path.exists(payload_path):
-    with open(payload_path, 'r', encoding='utf-8') as f:
-        payload = json.load(f)
-        termo = payload.get("termo", "termo_padrao")  # chave que você mandou do JS
-        print(f"Gerando página para o termo: {termo}")
-else:
-    termo = "termo_padrao"
-    print("payload.json não encontrado. Usando termo padrão.")
+# Garante que a pasta 'output' existe
+output_dir = "output"
+os.makedirs(output_dir, exist_ok=True)
 
-# Aqui você faz o processamento e geração do HTML com o termo
-with open(f"output/{termo}.html", "w", encoding="utf-8") as f:
-    f.write(f"<html><body><h1>Informações sobre {termo}</h1></body></html>")
+# Gera HTML básico com o termo
+html_content = f"""
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sobre {termo}</title>
+</head>
+<body>
+    <h1>Informações sobre {termo}</h1>
+    <p>Esta é uma página gerada automaticamente para o produto: <strong>{termo}</strong>.</p>
+</body>
+</html>
+"""
+
+# Salva no arquivo output/{termo}.html
+output_file = os.path.join(output_dir, f"{termo}.html")
+with open(output_file, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"Página criada com sucesso em: {output_file}")
