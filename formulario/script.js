@@ -1,6 +1,6 @@
 async function enviarTermo() {
   const termo = document.getElementById('termo').value;
-  const token = '${{ secrets.GH_PAT }}'; 
+  const token = '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'; 
   const repo = 'fabiowakisaka/comofazeremprestimo';
   const path = 'app/entrada.txt';
   const branch = 'main';
