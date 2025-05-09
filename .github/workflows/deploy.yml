@@ -2,7 +2,7 @@ name: Gerar página estática
 
 on:
   repository_dispatch:
-    types: [gerar-html]
+    types: [gerar-pagina]
 
 jobs:
   build:
@@ -21,12 +21,14 @@ jobs:
         run: |
           pip install -r app/requirements.txt
 
-      - name: Rodar script Python com input do usuário
+      - name: Rodar script Python
+        env:
+          TERM_BUSCA: ${{ github.event.client_payload.termo }}
         run: |
-          echo "${{ toJson(github.event.client_payload) }}" > payload.json
-          python app/main.py
+          echo "Rodando com termo: $TERM_BUSCA"
+          python app/main.py "$TERM_BUSCA"
 
-      - name: Deploy para GitHub Pages
+      - name: Deploy para o GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
