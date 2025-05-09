@@ -1,8 +1,8 @@
-name: Gerar página estática
+name: Gerar página estática e deploy no GitHub Pages
 
 on:
-  repository_dispatch:
-    types: [gerar-pagina]
+  push:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -22,14 +22,19 @@ jobs:
           pip install -r app/requirements.txt
 
       - name: Rodar script Python
-        env:
-          TERM_BUSCA: ${{ github.event.client_payload.termo }}
         run: |
-          echo "Rodando com termo: $TERM_BUSCA"
-          python app/main.py "$TERM_BUSCA"
+          python app/main.py
 
-      - name: Deploy para o GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./output
+      - name: Configurar Git para deploy
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Criar a branch gh-pages e fazer push do HTML
+        run: |
+          git checkout --orphan gh-pages
+          git rm -rf .
+          mv output/* .  # Move o conteúdo de output para a raiz da branch gh-pages
+          git add .
+          git commit -m "Deploy da página estática"
+          git push origin gh-pages --force
