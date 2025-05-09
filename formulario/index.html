@@ -1,20 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gerar Página Estática</title>
+    <meta charset="UTF-8">
+    <title>Gerar Página Estática</title>
 </head>
 <body>
-  <h1>Gerar Página</h1>
-  <form id="formulario">
-    <label for="termo">Digite um termo (ex: iPhone 14):</label>
-    <input type="text" id="termo" name="termo" required>
-    <button type="submit">Gerar Página</button>
-  </form>
+    <h1>Digite um termo para gerar uma página:</h1>
+    <form id="search-form">
+        <input type="text" id="termo" placeholder="Ex: iPhone 14" required />
+        <button type="submit">Gerar Página</button>
+    </form>
 
-  <div id="resultado"></div>
+    <div id="result"></div>
 
-  <script src="enviar.js"></script>
+    <script>
+        document.getElementById("search-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const termo = document.getElementById("termo").value;
+            const resultDiv = document.getElementById("result");
+
+            // Fazendo uma requisição fetch para o backend (substitua pela URL de seu servidor)
+            fetch("/gerar-pagina", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ termo: termo }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `<p>Página gerada: <a href="${data.link}">${data.link}</a></p>`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<p>Erro ao enviar solicitação: ${error.message}</p>`;
+            });
+        });
+    </script>
 </body>
 </html>
