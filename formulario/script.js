@@ -43,16 +43,16 @@ async function enviarTermo() {
     console.log("Resposta da API - PUT:", await putResp.text());
 
     if (putResp.ok) {
-      document.getElementById('resultado').innerText = "✅ Enviado com sucesso! Aguarde a geração da página.";
+      document.getElementById('resultado').innerText = "Enviado com sucesso! Aguarde a geração da página.";
     } else {
       const err = await putResp.json();
       console.error("Erro PUT:", err);
-      document.getElementById('resultado').innerText = "❌ Erro ao atualizar o arquivo:\n" + JSON.stringify(err, null, 2);
+      document.getElementById('resultado').innerText = "Erro ao atualizar o arquivo:\n" + JSON.stringify(err, null, 2);
     }
 
   } catch (err) {
     console.error("Erro geral:", err);
-    document.getElementById('resultado').innerText = "❌ Erro ao enviar solicitação:\n" + err.message;
+    document.getElementById('resultado').innerText = "Erro ao enviar solicitação:\n" + err.message;
   }
 }
 
