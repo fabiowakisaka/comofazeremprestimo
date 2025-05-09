@@ -9,7 +9,7 @@ document.getElementById('formulario').addEventListener('submit', async function 
   const repositorio = 'comofazeremprestimo';
 
   // Personal Access Token com escopo 'repo'
-  const token = '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';  // coloque temporariamente para testes locais
+  const token = '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';  // coloque temporariamente para testes locais
 
   const response = await fetch(`https://api.github.com/repos/${usuario}/${repositorio}/dispatches`, {
     method: 'POST',
