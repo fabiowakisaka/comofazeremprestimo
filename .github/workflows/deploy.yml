@@ -1,8 +1,8 @@
 name: Gerar página estática
 
 on:
-  push:
-    branches: [ "main" ]  # Dispara o workflow ao fazer push na branch main
+  repository_dispatch:
+    types: [gerar-html]
 
 jobs:
   build:
@@ -21,12 +21,13 @@ jobs:
         run: |
           pip install -r app/requirements.txt
 
-      - name: Rodar script Python
+      - name: Rodar script Python com input do usuário
         run: |
+          echo "${{ toJson(github.event.client_payload) }}" > payload.json
           python app/main.py
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy para GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./output  # Pasta onde estão os arquivos HTML gerados
+          publish_dir: ./output
