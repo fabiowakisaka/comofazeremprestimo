@@ -1,6 +1,6 @@
 async function enviarTermo() {
   const termo = document.getElementById('termo').value;
-  const token = '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'; // 
+  const token = '${{ secrets.GH_PAT }}'; 
   const repo = 'fabiowakisaka/comofazeremprestimo';
   const path = 'app/entrada.txt';
   const branch = 'main';
@@ -14,6 +14,10 @@ async function enviarTermo() {
   try {
     // Buscar SHA atual
     const getResp = await fetch(fileUrl, { headers });
+
+    // **Exibe o erro detalhado na API para depuração**
+    console.log("Resposta da API - GET:", await getResp.text());
+
     if (!getResp.ok) throw new Error(`Erro ao buscar SHA: ${getResp.statusText}`);
     const fileData = await getResp.json();
     const sha = fileData.sha;
@@ -34,6 +38,9 @@ async function enviarTermo() {
       headers,
       body: JSON.stringify(body)
     });
+
+    // **Exibe a resposta do PUT também**
+    console.log("Resposta da API - PUT:", await putResp.text());
 
     if (putResp.ok) {
       document.getElementById('resultado').innerText = "✅ Enviado com sucesso! Aguarde a geração da página.";
