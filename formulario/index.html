@@ -1,16 +1,43 @@
-<!-- formulario/index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <title>Gerador de Página Estática</title>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerar Página Estática</title>
 </head>
 <body>
-  <h2>Gerar nova página HTML</h2>
-  <input type="text" id="termo" placeholder="Digite o nome do produto">
-  <button onclick="enviarTermo()">Enviar</button>
-  <p id="resposta"></p>
+  <h1>Gerar Página Estática</h1>
+  <form id="formulario">
+    <label for="termo">Digite o nome do produto:</label><br />
+    <input type="text" id="termo" name="termo" required>
+    <button type="submit">Gerar</button>
+  </form>
 
-  <script src="script.js"></script>
+  <p id="mensagem"></p>
+
+  <script>
+    document.getElementById('formulario').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const termo = document.getElementById('termo').value;
+
+      const resposta = await fetch('https://api.github.com/repos/fabiowakisaka/comofazeremprestimo/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer SEU_TOKEN_GITHUB',  // substitua pelo token real
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28'
+        },
+        body: JSON.stringify({
+          event_type: 'gerar-html',
+          client_payload: { termo }
+        })
+      });
+
+      const msg = document.getElementById('mensagem');
+      msg.innerText = resposta.ok
+        ? ' Página sendo gerada...'
+        : ' Erro ao acionar GitHub Actions.';
+    });
+  </script>
 </body>
 </html>
