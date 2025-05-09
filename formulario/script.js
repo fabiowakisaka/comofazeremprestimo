@@ -1,6 +1,6 @@
 async function enviarTermo() {
   const termo = document.getElementById('termo').value;
-  const token = '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'; 
+  const token = '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'; 
   const repo = 'fabiowakisaka/comofazeremprestimo';
   const path = 'app/entrada.txt';
   const branch = 'main';
