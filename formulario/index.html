@@ -25,7 +25,7 @@
             event.preventDefault();
             document.getElementById("mensagem").textContent = "Enviando...";
 
-            fetch("https://exemplo.run.app/api/enviar-termo", {
+            fetch(" https://comofazeremprestimo-225224157777.us-central1.run.app", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ termo: document.getElementById("termo").value })
