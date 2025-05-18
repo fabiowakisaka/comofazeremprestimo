@@ -25,10 +25,10 @@
             event.preventDefault();
             document.getElementById("mensagem").textContent = "Enviando...";
 
-            fetch(" https://comofazeremprestimo-225224157777.us-central1.run.app", {
+            fetch("https://comofazeremprestimo-225224157777.us-central1.run.app/api/enviar-termo", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ termo: document.getElementById("termo").value })
+                body: JSON.stringify({ "termo": document.getElementById("termo").value })
             })
             .then(response => response.json())
             .then(data => {
@@ -38,7 +38,8 @@
                     document.getElementById("mensagem").textContent = "Erro: " + data.error;
                 }
             })
-            .catch(() => {
+            .catch(error => {
+                console.error("Erro:", error);
                 document.getElementById("mensagem").textContent = "Erro na conexão com o servidor!";
             });
         });
