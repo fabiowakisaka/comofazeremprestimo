@@ -1,75 +1,265 @@
-<div class="mb-3">
-    <label class="form-label fw-bold">Valor do Empréstimo</label>
-    <div class="input-group">
-        <span class="input-group-text">R$</span>
-        <input type="text" id="loanAmount" class="form-control form-control-lg" placeholder="0,00" oninput="formatCurrency(this)">
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-// 1. MÁSCARA DE MOEDA EM TEMPO REAL
-function formatCurrency(input) {
-    let value = input.value.replace(/\D/g, "");
-    value = (value / 100).toFixed(2) + "";
-    value = value.replace(".", ",");
-    value = value.replace(/(\d)(\d{3})(\d{3})/, "$1.$2.$3");
-    value = value.replace(/(\d)(\d{3})/, "$1.$2");
-    input.value = value;
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    // Calcular automaticamente ao digitar
-    calculateLoan();
-}
+    <!-- SEO de Alta Performance -->
+    <title>Simulador de Empréstimo 2026 | Calcule Parcelas e Juros Online</title>
+    <meta name="description" content="Use nosso simulador profissional com Tabela Price. Calcule o valor exato das suas parcelas, juros totais e encontre as melhores taxas do mercado.">
 
-// 2. CÁLCULO PROFISSIONAL (TABELA PRICE)
-function calculateLoan() {
-    const displayResult = document.getElementById('installmentResult');
+    <!-- Stylesheets -->
+    <link href="assets/css/theme.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    // Tratamento do valor (converte "1.500,00" em 1500.00)
-    let rawValue = document.getElementById('loanAmount').value.replace(/\./g, "").replace(",", ".");
-    let principal = parseFloat(rawValue);
+    <!-- Chart.js para o Gráfico de Evolução -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    let interestRate = 0.045; // Taxa média de 4.5% a.m. (Ajuste conforme o parceiro)
-    let term = parseInt(document.getElementById('loanTerm').value) || 12;
+    <!-- Configuração de Monetização -->
+    <script src="assets/js/monetization-config.js"></script>
 
-    if (principal > 0) {
-        // Fórmula de Parcelas Fixas
-        let x = Math.pow(1 + interestRate, term);
-        let monthly = (principal * x * interestRate) / (x - 1);
-        let totalPayment = monthly * term;
-        let totalInterest = totalPayment - principal;
-
-        // Atualiza o texto
-        displayResult.innerHTML = `R$ ${monthly.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-        // 3. ATUALIZAÇÃO DO GRÁFICO
-        updateChart(principal, totalInterest);
-    }
-}
-
-let loanChart;
-function updateChart(capital, juros) {
-    const ctx = document.getElementById('loanChart').getContext('2d');
-    
-    if (loanChart) { loanChart.destroy(); }
-    
-    loanChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Capital solicitado', 'Juros totais'],
-            datasets: [{
-                data: [capital, juros],
-                backgroundColor: ['#ffc107', '#212529'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            plugins: {
-                legend: { position: 'bottom' }
-            },
-            cutout: '70%'
+    <style>
+        .simulator-container {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-top: 8px solid #ffc107;
         }
-    });
-}
-</script>
+        .form-control-lg {
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .form-control-lg:focus {
+            border-color: #ffc107;
+            box-shadow: none;
+            background: #fffdf5;
+        }
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .animate-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <main class="main" id="top">
+        <!-- BLOCO: Menu Modular -->
+        <div id="header-placeholder"></div>
+
+        <section class="pt-8 pb-6">
+            <div class="container">
+                <div class="row g-5">
+                    
+                    <!-- LADO ESQUERDO: O SIMULADOR -->
+                    <div class="col-lg-7">
+                        <div class="simulator-container animate-up">
+                            <h1 class="fw-bold mb-2 fs-3">Simulador de Crédito Profissional</h1>
+                            <p class="text-secondary mb-5">Cálculo baseado na Tabela Price (parcelas fixas).</p>
+                            
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="fw-bold text-dark mb-2">Valor do Empréstimo</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-white border-end-0">R$</span>
+                                        <input type="text" id="valorInput" class="form-control border-start-0" placeholder="0,00" oninput="mascaraMoeda(this)">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="fw-bold text-dark mb-2">Prazo (Meses)</label>
+                                    <select id="prazoInput" class="form-select form-select-lg" onchange="calcular()">
+                                        <option value="6">6 meses</option>
+                                        <option value="12" selected>12 meses</option>
+                                        <option value="24">24 meses</option>
+                                        <option value="36">36 meses</option>
+                                        <option value="48">48 meses</option>
+                                        <option value="60">60 meses</option>
+                                        <option value="84">84 meses</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="fw-bold text-dark mb-2">Taxa de Juros Mensal (%)</label>
+                                    <input type="text" id="taxaInput" class="form-control form-control-lg" value="3,50" oninput="calcular()">
+                                </div>
+                            </div>
+
+                            <!-- ÁREA DE RESULTADOS (Injetada via JS) -->
+                            <div id="areaResultado" class="mt-5" style="display:none;">
+                                <div class="result-card mb-4 border-start border-4 border-primary">
+                                    <div class="row text-center">
+                                        <div class="col-6 border-end">
+                                            <small class="text-muted text-uppercase fw-bold">Parcela Mensal</small>
+                                            <h2 class="fw-bold text-primary mb-0" id="resParcela">R$ 0,00</h2>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted text-uppercase fw-bold">Total a Pagar</small>
+                                            <h2 class="fw-bold text-dark mb-0" id="resTotal">R$ 0,00</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CTA DINÂMICO (Fundo de Funil) -->
+                                <div id="ctaDinamico" class="mb-5"></div>
+
+                                <!-- GRÁFICO -->
+                                <div class="mt-4">
+                                    <h6 class="fw-bold text-center text-secondary mb-3">Evolução do Saldo Devedor</h6>
+                                    <canvas id="graficoEvolucao" width="400" height="180"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LADO DIREITO: CONTEÚDO E AUTORIDADE -->
+                    <div class="col-lg-5">
+                        <div class="ps-lg-4">
+                            <h2 class="fw-bold mb-4">Entenda o cálculo</h2>
+                            <p class="text-secondary lh-lg">Nosso simulador utiliza o sistema de <b>Amortização Francesa (Tabela Price)</b>. Isso significa que as suas parcelas serão iguais do início ao fim do contrato.</p>
+                            
+                            <div class="card bg-dark text-white border-0 rounded-4 shadow-lg mt-5">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-warning p-2 rounded-circle me-3">
+                                            <i class="fas fa-lightbulb text-dark"></i>
+                                        </div>
+                                        <h5 class="fw-bold text-warning mb-0">Dica de Especialista</h5>
+                                    </div>
+                                    <p class="small opacity-75">Sempre compare o <b>CET (Custo Efetivo Total)</b>. Muitas vezes uma taxa de juros baixa esconde tarifas bancárias e seguros caros.</p>
+                                    <hr class="opacity-25">
+                                    <p class="fw-bold mb-2">Melhores taxas hoje:</p>
+                                    <ul class="list-unstyled small">
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i><b>FGTS:</b> A partir de 1.49% a.m.</li>
+                                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i><b>Consignado:</b> Até 84 meses.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div id="sidebar-ad-placeholder" class="mt-4"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- BLOCO: Rodapé Modular -->
+        <div id="footer-placeholder"></div>
+    </main>
+
+    <script>
+        // 1. MÁSCARA DE MOEDA (Coloca o ,00 automaticamente)
+        function mascaraMoeda(i) {
+            let v = i.value.replace(/\D/g,'');
+            v = (v/100).toFixed(2) + '';
+            v = v.replace(".", ",");
+            v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+            v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
+            i.value = v;
+            calcular(); // Calcula enquanto digita
+        }
+
+        let meuGrafico = null;
+
+        // 2. LÓGICA DE CÁLCULO BANCÁRIO (TABELA PRICE)
+        function calcular() {
+            const valorBruto = document.getElementById('valorInput').value.replace(/\./g, '').replace(',', '.');
+            const valor = parseFloat(valorBruto) || 0;
+            const prazo = parseInt(document.getElementById('prazoInput').value);
+            const taxaMensal = parseFloat(document.getElementById('taxaInput').value.replace(',', '.')) / 100 || 0;
+
+            if (valor > 0 && taxaMensal > 0) {
+                document.getElementById('areaResultado').style.display = 'block';
+
+                // Fórmula Price: P = V * [i * (1 + i)^n] / [(1 + i)^n - 1]
+                const parcela = valor * (taxaMensal * Math.pow(1 + taxaMensal, prazo)) / (Math.pow(1 + taxaMensal, prazo) - 1);
+                const totalPagar = parcela * prazo;
+                const totalJuros = totalPagar - valor;
+
+                // Formatação Brasileira
+                const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                document.getElementById('resParcela').innerText = formatador.format(parcela);
+                document.getElementById('resTotal').innerText = formatador.format(totalPagar);
+
+                // 3. CTA DINÂMICO (ESTRATÉGIA DE CONVERSÃO)
+                const ctaDiv = document.getElementById('ctaDinamico');
+                if (taxaMensal > 0.03) { // Se juros > 3% ao mês
+                    ctaDiv.innerHTML = `
+                        <div class="alert bg-soft-warning border-0 p-4 animate-up">
+                            <h6 class="fw-bold text-dark"><i class="fas fa-exclamation-circle me-2"></i>Taxa acima da média detectada!</h6>
+                            <p class="small text-secondary mb-3">Você sabia que pode pagar juros até 3x menores usando seu FGTS ou o Consignado?</p>
+                            <a href="pages/fies.html" class="btn btn-warning fw-bold w-100">SIMULAR FGTS (MAIS BARATO)</a>
+                        </div>`;
+                } else {
+                    ctaDiv.innerHTML = `
+                        <div class="alert bg-soft-success border-0 p-4 animate-up">
+                            <h6 class="fw-bold text-success"><i class="fas fa-check-circle me-2"></i>Ótima Taxa!</h6>
+                            <p class="small text-secondary mb-3">Esta condição está excelente. Aproveite para solicitar sua análise com nossos parceiros oficiais.</p>
+                            <a href="pages/emprestimo-para-negativados.html" class="btn btn-success fw-bold w-100 text-white">SOLICITAR APROVAÇÃO AGORA</a>
+                        </div>`;
+                }
+
+                // 4. ATUALIZAÇÃO DO GRÁFICO (Evolução da Dívida)
+                const labels = [];
+                const dadosSaldo = [];
+                let saldoDevedor = totalPagar;
+                for (let i = 0; i <= prazo; i++) {
+                    labels.push('Mês ' + i);
+                    dadosSaldo.push(saldoDevedor > 0 ? saldoDevedor.toFixed(2) : 0);
+                    saldoDevedor -= parcela;
+                }
+
+                const ctx = document.getElementById('graficoEvolucao').getContext('2d');
+                if (meuGrafico) meuGrafico.destroy();
+                meuGrafico = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Dívida Restante',
+                            data: dadosSaldo,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+        }
+
+        // 5. CARREGAMENTO DOS COMPONENTES
+        function loadComponent(id, file) {
+            fetch(file).then(r => r.text()).then(d => document.getElementById(id).innerHTML = d);
+        }
+        loadComponent('header-placeholder', 'components/header.html');
+        loadComponent('footer-placeholder', 'components/footer.html');
+        loadComponent('sidebar-ad-placeholder', 'components/ads-sidebar.html');
+    </script>
+
+    <script src="vendors/bootstrap/bootstrap.min.js"></script>
+    <script src="vendors/fontawesome/all.min.js"></script>
+</body>
+</html>
