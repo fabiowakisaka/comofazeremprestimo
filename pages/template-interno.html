@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Título do Artigo - Como Fazer Empréstimo</title>
+    
+    <!-- CSS e Fontes -->
+    <link href="../assets/css/theme.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Configuração de Monetização e Analytics -->
+    <script src="../assets/js/monetization-config.js"></script>
+</head>
+<body>
+    <main class="main">
+        <!-- Menu Modular -->
+        <div id="header-placeholder"></div>
+
+        <!-- Conteúdo do Artigo -->
+        <section class="pt-5 pb-9">
+            <div class="container">
+                <div class="row g-5">
+                    <!-- Coluna Principal (Texto) -->
+                    <div class="col-lg-8">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="../index.html">Início</a></li>
+                                <li class="breadcrumb-item"><a href="../modalidades.html">Modalidades</a></li>
+                                <li class="breadcrumb-item active">Nome da Categoria</li>
+                            </ol>
+                        </nav>
+                        
+                        <h1 class="fw-bold mb-4">Título Principal do Empréstimo</h1>
+                        
+                        <!-- Espaço para AdSense Contextual -->
+                        <div id="ad-article-top" class="my-4 py-2 border-top border-bottom text-center text-muted fs--2">
+                            -- Anúncio Google AdSense --
+                        </div>
+
+                        <div class="content text-secondary lh-lg">
+                            <p>O texto do seu artigo entra aqui. Use <b>negrito</b> para termos importantes para SEO.</p>
+                            <h2 class="text-dark fw-bold mt-4">Subtítulo Importante</h2>
+                            <p>Explicação detalhada sobre as taxas e condições desta modalidade.</p>
+                        </div>
+
+                        <!-- CTA Interno -->
+                        <div class="bg-soft-warning p-4 rounded-3 my-5 border-start border-warning border-4">
+                            <h4 class="fw-bold">Pronto para simular?</h4>
+                            <p class="mb-3">Veja as ofertas disponíveis agora para o seu perfil.</p>
+                            <a href="../simulador.html" class="btn btn-warning fw-bold primary-btn-shadow">SIMULAR GRÁTIS</a>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar de Monetização -->
+                    <div class="col-lg-4">
+                        <div class="sticky-sidebar">
+                            <div id="ad-sidebar-placeholder"></div>
+                            
+                            <div class="card bg-light border-0 p-4 mt-4">
+                                <h5 class="fw-bold">Outras Modalidades</h5>
+                                <ul class="list-unstyled mt-3">
+                                    <li class="mb-2"><a href="consignado.html" class="text-secondary text-decoration-none shadow-hover">💰 Empréstimo Consignado</a></li>
+                                    <li class="mb-2"><a href="negativados.html" class="text-secondary text-decoration-none shadow-hover">🚫 Para Negativados</a></li>
+                                    <li class="mb-2"><a href="fgts.html" class="text-secondary text-decoration-none shadow-hover">🏦 Antecipação FGTS</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rodapé Modular -->
+        <div id="footer-placeholder"></div>
+    </main>
+
+    <!-- Scripts de carregamento dos módulos -->
+    <script>
+        function loadComponent(id, file) {
+            fetch(file).then(response => response.text()).then(data => {
+                document.getElementById(id).innerHTML = data;
+            });
+        }
+        // Note o caminho "../" pois estamos dentro da pasta /pages
+        loadComponent('header-placeholder', '../components/header.html');
+        loadComponent('ad-sidebar-placeholder', '../components/ads-sidebar.html');
+        loadComponent('footer-placeholder', '../components/footer.html');
+    </script>
+    <script src="../vendors/bootstrap/bootstrap.min.js"></script>
+</body>
+</html>
