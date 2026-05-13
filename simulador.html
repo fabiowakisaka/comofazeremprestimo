@@ -1,88 +1,272 @@
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-    let chart = null;
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
 
-    document.getElementById('calcular').addEventListener('click', function() {
-        let valor = parseFloat(document.getElementById('valor').value.replace(/\./g, '').replace(',', '.')) || 0;
-        let prazo = parseInt(document.getElementById('prazo').value) || 0;
-        let taxaMensal = parseFloat(document.getElementById('taxa').value.replace(',', '.')) / 100 || 0;
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- SEO de Alta Performance -->
+    <title>Simulador de Empréstimo 2026: Calcule sua Parcela Mensal</title>
+    <meta name="description" content="Use nosso simulador profissional para calcular parcelas fixas, juros e o custo total do seu empréstimo. Planejamento financeiro 100% gratuito.">
 
-        if (valor <= 0 || prazo <= 0 || taxaMensal <= 0) {
-            alert("Por favor, preencha os dados corretamente.");
-            return;
+    <!-- Stylesheets -->
+    <link href="assets/css/theme.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js para o Gráfico de Evolução -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Configuração de Monetização -->
+    <script src="assets/js/monetization-config.js"></script>
+
+    <style>
+        .simulator-container {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-top: 6px solid #ffc107;
         }
+        .form-control-custom {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s;
+        }
+        .form-control-custom:focus {
+            border-color: #ffc107;
+            box-shadow: none;
+            background: #fff9e6;
+        }
+        .result-highlight {
+            background: #f0f7f4;
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid #d1e7dd;
+        }
+        .animate-in {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
 
-        // LÓGICA TABELA PRICE (Parcelas Fixas)
-        // Fórmula: P = V * [ (i * (1 + i)^n) / ((1 + i)^n - 1) ]
-        let parcela = valor * (taxaMensal * Math.pow(1 + taxaMensal, prazo)) / (Math.pow(1 + taxaMensal, prazo) - 1);
-        let totalPago = parcela * prazo;
-        let totalJuros = totalPago - valor;
+<body class="bg-light">
 
-        // Mostrar Resultados
-        document.getElementById('resultado').style.display = 'block';
-        document.getElementById('resultado-texto').innerHTML = `
-            <div class="row text-center mt-3">
-                <div class="col-md-6 mb-3">
-                    <small class="text-uppercase text-muted d-block">Parcela Mensal Fixa</small>
-                    <h3 class="fw-bold text-primary">${formatter.format(parcela)}</h3>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <small class="text-uppercase text-muted d-block">Total Final com Juros</small>
-                    <h3 class="fw-bold text-dark">${formatter.format(totalPago)}</h3>
+    <main class="main" id="top">
+        <!-- BLOCO: Menu Modular -->
+        <div id="header-placeholder"></div>
+
+        <!-- Seção Principal -->
+        <section class="pt-8 pb-6">
+            <div class="container">
+                <div class="row g-5">
+                    
+                    <!-- LADO ESQUERDO: O Simulador -->
+                    <div class="col-lg-7">
+                        <div class="simulator-container animate-in">
+                            <h1 class="fw-bold mb-2 fs-3 text-dark">Simulador de Empréstimo</h1>
+                            <p class="text-secondary mb-5">Calcule parcelas fixas usando a Tabela Price (padrão bancário).</p>
+                            
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="fw-bold text-dark mb-2">Quanto você quer emprestar?</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0">R$</span>
+                                        <input type="text" id="valor" class="form-control form-control-lg border-start-0" placeholder="5.000,00">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="fw-bold text-dark mb-2">Em quantos meses?</label>
+                                    <select id="prazo" class="form-select form-select-lg">
+                                        <option value="6">6 meses</option>
+                                        <option value="12" selected>12 meses</option>
+                                        <option value="24">24 meses</option>
+                                        <option value="36">36 meses</option>
+                                        <option value="48">48 meses</option>
+                                        <option value="60">60 meses</option>
+                                        <option value="84">84 meses (Consignado)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="fw-bold text-dark mb-2">Taxa de Juros Mensal (%)</label>
+                                    <input type="text" id="taxa" class="form-control form-control-lg" value="3,50">
+                                </div>
+
+                                <div class="col-12 mt-5">
+                                    <button id="calcular" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow-sm">SIMULAR MINHAS PARCELAS</button>
+                                </div>
+                            </div>
+
+                            <!-- Área de Resultados (Fundo de Funil) -->
+                            <div id="resultado" class="mt-5" style="display:none;">
+                                <div class="result-highlight animate-in">
+                                    <div id="resultado-texto">
+                                        <!-- Injetado via JS -->
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-5">
+                                    <h6 class="fw-bold text-center text-secondary mb-4">Evolução da sua Dívida Mês a Mês</h6>
+                                    <canvas id="grafico" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LADO DIREITO: Autoridade & CTA de Afiliados -->
+                    <div class="col-lg-5">
+                        <div class="sticky-sidebar">
+                            <h2 class="fw-bold mb-4">Por que simular conosco?</h2>
+                            <p class="text-secondary lh-lg mb-4">Nossa calculadora utiliza o mesmo algoritmo que os grandes bancos. Você descobre o custo real antes mesmo de falar com um gerente.</p>
+                            
+                            <!-- Card de Sugestão Inteligente (Gera Comissão) -->
+                            <div class="card bg-dark text-white border-0 rounded-4 overflow-hidden shadow-lg mt-5">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-warning p-2 rounded-circle me-3">
+                                            <i class="fas fa-percentage text-dark"></i>
+                                        </div>
+                                        <h5 class="fw-bold text-warning mb-0">Dica de Economia</h5>
+                                    </div>
+                                    <p class="fs--1 opacity-75">Se você encontrou taxas acima de 2%, saiba que modalidades como o <b>Consignado</b> ou <b>Garantia Veicular</b> podem reduzir sua parcela pela metade.</p>
+                                    <div class="d-grid gap-2 mt-4">
+                                        <a href="pages/emprestimo-com-veiculo-alienado.html" class="btn btn-outline-warning btn-sm text-start">Garantia Veicular (Banco BV) <i class="fas fa-chevron-right float-end mt-1"></i></a>
+                                        <a href="pages/fies.html" class="btn btn-outline-light btn-sm text-start">Antecipação FGTS (Taxas menores) <i class="fas fa-chevron-right float-end mt-1"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Espaço para AdSense Sidebar -->
+                            <div id="sidebar-ad-placeholder" class="mt-4"></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-            <p class="text-center fs--1 text-secondary mt-2">Você pagará <strong>${formatter.format(totalJuros)}</strong> apenas em juros nesta simulação.</p>
-        `;
+        </section>
 
-        // INJEÇÃO FUNDO DE FUNIL (Onde o lucro acontece)
-        let recomendacaoHTML = "";
-        if (taxaMensal > 0.03) { // Se juros > 3% a.m.
-            recomendacaoHTML = `
-                <div class="alert bg-soft-warning border-warning p-4 mt-4 animate-in">
-                    <h5 class="fw-bold"><i class="fas fa-magic me-2"></i> Encontramos taxas menores para você!</h5>
-                    <p class="small text-dark">Sua simulação está com juros de mercado aberto. Se você tem <strong>FGTS</strong> ou é <strong>Aposentado</strong>, pode pagar até 60% menos juros.</p>
-                    <div class="d-grid gap-2 d-md-flex">
-                        <a href="pages/fies.html" class="btn btn-warning btn-sm fw-bold">ANTECIPAR FGTS (Taxas de 1.49%)</a>
-                        <a href="pages/emprestimo-consignado.html" class="btn btn-outline-dark btn-sm fw-bold">VER CONSIGNADO</a>
+        <!-- BLOCO: Rodapé Modular -->
+        <div id="footer-placeholder"></div>
+    </main>
+
+    <!-- Lógica de Cálculo e Fundo de Funil -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+            let chart = null;
+
+            document.getElementById('calcular').addEventListener('click', function() {
+                // Captura de Dados
+                let valor = parseFloat(document.getElementById('valor').value.replace(/\./g, '').replace(',', '.')) || 0;
+                let prazo = parseInt(document.getElementById('prazo').value) || 0;
+                let taxaMensal = parseFloat(document.getElementById('taxa').value.replace(',', '.')) / 100 || 0;
+
+                if (valor <= 0 || taxaMensal <= 0) {
+                    alert("Por favor, insira o valor e a taxa de juros.");
+                    return;
+                }
+
+                // CÁLCULO TABELA PRICE
+                let parcela = valor * (taxaMensal * Math.pow(1 + taxaMensal, prazo)) / (Math.pow(1 + taxaMensal, prazo) - 1);
+                let totalPago = parcela * prazo;
+                let totalJuros = totalPago - valor;
+
+                // MOSTRAR RESULTADOS
+                document.getElementById('resultado').style.display = 'block';
+                
+                let recomendacao = "";
+                // Logica de Fundo de Funil baseada na Taxa
+                if (taxaMensal > 0.035) {
+                    recomendacao = `
+                        <div class="alert bg-soft-warning border-0 p-4 mt-4 animate-in">
+                            <h6 class="fw-bold text-dark"><i class="fas fa-exclamation-circle me-2"></i>Esses juros estão altos!</h6>
+                            <p class="small text-secondary mb-3">Detectamos que você está simulando com taxas de mercado aberto. Você pode economizar muito dinheiro trocando por uma modalidade garantida.</p>
+                            <a href="pages/fies.html" class="btn btn-warning btn-sm fw-bold">VER ANTECIPAÇÃO FGTS</a>
+                        </div>`;
+                } else {
+                    recomendacao = `
+                        <div class="alert bg-soft-success border-0 p-4 mt-4 animate-in">
+                            <h6 class="fw-bold text-success"><i class="fas fa-check-circle me-2"></i>Ótima Taxa de Juros!</h6>
+                            <p class="small text-secondary mb-3">Essa é uma excelente condição. Recomendamos simular agora nos nossos parceiros para garantir essa aprovação.</p>
+                            <a href="pages/emprestimo-para-negativados.html" class="btn btn-success btn-sm fw-bold">SOLICITAR AGORA</a>
+                        </div>`;
+                }
+
+                document.getElementById('resultado-texto').innerHTML = `
+                    <div class="row text-center">
+                        <div class="col-md-6 mb-3 border-end border-2 border-soft-secondary">
+                            <small class="text-uppercase text-muted fw-bold d-block mb-1">Parcela Mensal</small>
+                            <h2 class="fw-bold text-primary mb-0">${formatter.format(parcela)}</h2>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <small class="text-uppercase text-muted fw-bold d-block mb-1">Total a Pagar</small>
+                            <h2 class="fw-bold text-dark mb-0">${formatter.format(totalPago)}</h2>
+                        </div>
                     </div>
-                </div>`;
-        } else {
-            recomendacaoHTML = `
-                <div class="alert bg-soft-success border-success p-4 mt-4 animate-in">
-                    <h5 class="fw-bold"><i class="fas fa-check-circle me-2"></i> Ótima escolha de crédito!</h5>
-                    <p class="small text-dark">Essas taxas são competitivas. Que tal simular agora com nossos parceiros oficiais para garantir essa aprovação?</p>
-                    <a href="pages/emprestimo-para-negativados.html" class="btn btn-success btn-sm fw-bold">SOLICITAR APROVAÇÃO AGORA</a>
-                </div>`;
-        }
-        document.getElementById('resultado-texto').innerHTML += recomendacaoHTML;
+                    <div class="text-center mt-3 pt-3 border-top">
+                        <p class="mb-0 text-secondary">Custo Total de Juros: <span class="text-danger fw-bold">${formatter.format(totalJuros)}</span></p>
+                    </div>
+                    ${recomendacao}
+                `;
 
-        // Gráfico de Evolução (Saldo Devedor decrescente - Mais intuitivo)
-        const labels = [];
-        const dadosGrafico = [];
-        let saldoDevedor = totalPago;
-        for (let i = 0; i <= prazo; i++) {
-            labels.push(`Mês ${i}`);
-            dadosGrafico.push(saldoDevedor);
-            saldoDevedor -= parcela;
-        }
+                // GRÁFICO DE EVOLUÇÃO (Dívida caindo)
+                const labels = [];
+                const dadosGrafico = [];
+                let saldoParaGrafico = totalPago;
+                for (let i = 0; i <= prazo; i++) {
+                    labels.push(`Mês ${i}`);
+                    dadosGrafico.push(saldoParaGrafico > 0 ? saldoParaGrafico : 0);
+                    saldoParaGrafico -= parcela;
+                }
 
-        const ctx = document.getElementById('grafico').getContext('2d');
-        if (chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Sua dívida diminuindo mensalmente',
-                    data: dadosGrafico,
-                    borderColor: '#198754',
-                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            }
+                const ctx = document.getElementById('grafico').getContext('2d');
+                if (chart) chart.destroy();
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Saldo Devedor Restante',
+                            data: dadosGrafico,
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: { 
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+
+                // Scroll suave para o resultado
+                document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+            });
         });
-    });
-});
-</script>
+
+        // Carregamento de Componentes
+        function loadComponent(id, file) {
+            fetch(file).then(response => response.text()).then(data => {
+                document.getElementById(id).innerHTML = data;
+            });
+        }
+        loadComponent('header-placeholder', 'components/header.html');
+        loadComponent('sidebar-ad-placeholder', 'components/ads-sidebar.html');
+        loadComponent('footer-placeholder', 'components/footer.html');
+    </script>
+
+    <!-- Bibliotecas Base -->
+    <script src="vendors/bootstrap/bootstrap.min.js"></script>
+    <script src="vendors/fontawesome/all.min.js"></script>
+</body>
+</html>
