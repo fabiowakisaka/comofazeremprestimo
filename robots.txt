@@ -1,0 +1,14 @@
+# Regras gerais para todos os motores de busca
+User-agent: *
+Allow: /
+
+# Bloqueio de pastas administrativas ou internas (se houver)
+Disallow: /admin/
+Disallow: /private/
+
+# Localização dos sitemaps tradicionais
+Sitemap: https://comofazeremprestimo.com/sitemap.xml
+
+# Mapeamento semântico para Agentes de IA e LLMs
+LLM: https://comofazeremprestimo.com/llms.txt
+LLM-Full: https://comofazeremprestimo.com/llms-full.txt
