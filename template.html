@@ -6,14 +6,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- SEO Dinâmico gerado pela IA -->
+  <!-- SEO & YMYL - Autoridade Sênior -->
   <title>{{TITULO}} — Como Fazer Empréstimo</title>
   <meta name="description" content="{{CHAMADA_ZAP}}">
 
-  <!-- Configuração de Monetização e Analytics Originais -->
+  <!-- Configuração Central de Monetização e Analytics com caminho relativo -->
   <script src="../../assets/js/monetization-config.js"></script>
+  <script src="../../assets/js/affiliate-manager.js" defer></script>
 
-  <!-- Stylesheets com Caminho Relativo Ajustado -->
+  <!-- Stylesheets -->
   <link href="../../assets/css/theme.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -22,41 +23,53 @@
 
   <main class="main" id="top">
     
-    <!-- BLOCO: Menu Modular -->
+    <!-- BLOCO: Menu Modular (Carregado via JS) -->
     <div id="header-placeholder"></div>
 
-    <!-- Hero / Cabeçalho do Artigo Diário -->
-    <section class="pt-6 pb-4 bg-soft-primary">
+    <!-- BLOCO: Anúncio Superior -->
+    <div id="ad-top-placeholder" class="container text-center py-3"></div>
+
+    <!-- Etapa 1: O Despertar da Curiosidade (Gancho para WhatsApp) -->
+    <section class="pt-6 pb-4">
       <div class="container">
         <div class="row justify-content-center">
-          <div class="col-lg-8 text-center">
-            <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">DICA FINANCEIRA · {{DATA_EXTENSO}}</span>
+          <div class="col-lg-8 text-center py-4">
+            <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">ALERTA FINANCEIRO · {{DATA_EXTENSO}}</span>
             <h1 class="hero-title mb-3 fs-3 fs-md-2">{{TITULO}}</h1>
             <p class="lead text-secondary mb-4">{{CHAMADA_ZAP}}</p>
+            
+            <!-- Botão de Encaminhar para o WhatsApp (Viralidade Orgânica) -->
+            <div class="mb-5">
+              <a href="https://api.whatsapp.com/send?text={{TEXTO_WHATSAPP}}" target="_blank" class="btn btn-success btn-lg fw-bold px-4 shadow-sm">
+                <i class="fab fa-whatsapp me-2"></i> Encaminhar para Grupo de Família
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Conteúdo Principal da Dica Gerado pela IA -->
-    <section class="py-5">
+    <!-- Etapa 2: O Esclarecimento da Dúvida (Conteúdo Revelado) -->
+    <section class="py-5 bg-soft-primary">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8">
-            <article class="blog-content fs-1 text-secondary lh-lg">
-              {{REFLEXAO_HTML}}
-            </article>
+            <div class="p-5 bg-white rounded-3 shadow-sm border border-2 border-warning">
+              <article class="blog-content fs-1 text-secondary lh-lg mb-5">
+                {{REFLEXAO_HTML}}
+              </article>
 
-            <!-- Funil de Conversão: Direcionando o leitor para o simulador do site principal -->
-            <div class="card my-5 bg-warning bg-opacity-10 border-warning border-2 rounded-3 p-4 text-center">
-              <h3 class="fw-bold text-dark mb-2">Precisa de crédito com segurança?</h3>
-              <p class="text-secondary mb-4">Compare as melhores taxas do mercado agora mesmo em nosso simulador gratuito.</p>
-              <a href="../../simulador.html" class="btn btn-warning btn-lg fw-bold px-5">ACESSAR SIMULADOR DE EMPRÉSTIMO</a>
+              <!-- Funil de Monetização / Conversão (Logo abaixo da revelação) -->
+              <div class="p-4 bg-warning bg-opacity-10 rounded-3 text-center border border-warning">
+                <h3 class="fw-bold text-dark mb-2">Precisa de crédito seguro e sem taxas abusivas?</h3>
+                <p class="text-secondary mb-4">Compare as melhores opções do mercado no nosso simulador oficial.</p>
+                <a href="../../simulador.html" class="btn btn-warning btn-lg fw-bold px-5 primary-btn-shadow">SIMULAR EMPRÉSTIMO AGORA</a>
+              </div>
             </div>
 
-            <!-- Navegação para voltar ao início -->
-            <div class="d-flex justify-content-center align-items-center mt-5 pt-4 border-top">
-              <a href="../../index.html" class="text-warning fw-bold text-decoration-none">&larr; Voltar para a Página Inicial</a>
+            <!-- Navegação de Retorno -->
+            <div class="text-center mt-5">
+              <a href="../../index.html" class="text-secondary fw-bold text-decoration-none">&larr; Voltar para a Página Inicial</a>
             </div>
 
           </div>
@@ -64,12 +77,12 @@
       </div>
     </section>
 
-    <!-- BLOCO: Rodapé Modular -->
+    <!-- BLOCO: Rodapé Modular (Carregado via JS com caminho correto) -->
     <div id="footer-placeholder"></div>
 
   </main>
 
-  <!-- Scripts de Carregamento Modular com Caminho Relativo Ajustado -->
+  <!-- Scripts de Carregamento Modular -->
   <script>
     function loadComponent(id, file) {
       fetch(file)
@@ -84,6 +97,7 @@
     }
 
     loadComponent('header-placeholder', '../../components/header.html');
+    loadComponent('ad-top-placeholder', '../../components/ads-top.html');
     loadComponent('footer-placeholder', '../../components/footer.html');
   </script>
 
