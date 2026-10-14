@@ -38,46 +38,156 @@ def obter_termometro_noticias():
         return "\n".join([f"- {t.strip()}" for t in titulos if t])
     except Exception as e:
         print(f"Aviso ao consultar notícias: {e}")
-        return "- Controle de orçamento familiar, inflação, boletos e crédito consciente no Brasil."
+        return "- Controle de orçamento familiar, inflação, taxas de juros e crédito consciente no Brasil."
 
 noticias_contexto = obter_termometro_noticias()
 
-# 4. Matriz de Ângulos Financeiros
-ANGULOS_FINANCEIROS = [
-    {"tema": "Como organizar dívidas caras", "diretriz": "Foque em trocar dívidas de juros altos por linhas mais baratas."},
-    {"tema": "O perigo do depósito antecipado", "diretriz": "Alerta rigoroso contra golpistas que cobram taxa para liberar empréstimo."},
-    {"tema": "Calculando o Custo Efetivo Total", "diretriz": "Explique por que a taxa de juros mensal não é o único valor que importa."},
-    {"tema": "Organizando o orçamento com o método 50-30-20", "diretriz": "Dica prática de divisão de renda para sobrar dinheiro."},
-    {"tema": "Como recuperar o Score de crédito", "diretriz": "Passos práticos e reais para subir a pontuação sem falsas promessas."},
-    {"tema": "Empréstimo consignado vale a pena?", "diretriz": "Analise prós e contras para aposentados, pensionistas e CLT."},
-    {"tema": "Negociação de dívidas", "diretriz": "Oriente sobre como conseguir descontos reais para limpar o nome."}
+# 4. Matriz Tridimensional de Cruzamento (Público x Dor Financeira x Gatilho WhatsApp)
+VETOR_PUBLICO = [
+    {
+        "perfil": "Aposentados e Pensionistas do INSS",
+        "contexto": "Buscam segurança, têm medo de fraudes no benefício, precisam entender margem consignável e taxas máximas permitidas."
+    },
+    {
+        "perfil": "Trabalhadores CLT com saldo no FGTS",
+        "contexto": "Querem dinheiro rápido sem comprometer a renda mensal ou buscam entender se vale a pena antecipar o saque-aniversário ou usar consignado privado."
+    },
+    {
+        "perfil": "Autônomos, MEIs e Profissionais Informais",
+        "contexto": "Têm dificuldade de comprovar renda tradicional, precisam separar contas pessoais do negócio e buscar microcrédito ou linhas justas."
+    },
+    {
+        "perfil": "Pessoas com Nome Restrito (Negativados)",
+        "contexto": "Estão vulneráveis a golpes na internet, precisam limpar o nome com desconto real ou encontrar crédito legítimo com garantia."
+    },
+    {
+        "perfil": "Endividados com Cartão de Crédito e Cheque Especial",
+        "contexto": "Sofrem com o efeito bola de neve dos juros rotativos e precisam urgente trocar uma dívida cara por uma linha mais barata."
+    },
+    {
+        "perfil": "Chefes de Família com Orçamento Apertado",
+        "contexto": "Buscam fôlego financeiro no fim do mês, redução de despesas fixas e proteção patrimonial da família."
+    },
+    {
+        "perfil": "Servidores Públicos",
+        "contexto": "Possuem acesso às melhores taxas de consignado, mas frequentemente caem em armadilhas de renovação infinita de contratos ou cartão consignado (RMC)."
+    }
 ]
 
-random.seed(hoje_dt.strftime("%Y%m%d"))
-angulo_hoje = random.choice(ANGULOS_FINANCEIROS)
+VETOR_TEMAS = [
+    {
+        "tema": "Substituição Inteligente de Dívidas (Troca de Juros)",
+        "diretriz": "Explique matematicamente e de forma simples como quitar dívidas que cobram mais de 10% ao mês usando um empréstimo planejado de taxa reduzida."
+    },
+    {
+        "tema": "Blindagem Contra o Golpe do Falso Empréstimo",
+        "diretriz": "Destaque a regra de ouro do Banco Central: nenhuma instituição financeira séria cobra taxa antecipada, frete de contrato, seguro-fiança ou depósito prévio para liberar crédito."
+    },
+    {
+        "tema": "A Verdade sobre o Custo Efetivo Total (CET)",
+        "diretriz": "Mostre como bancos embutem IOF, tarifas de cadastro e seguros opcionais na parcela, e como exigir a planilha do CET antes de assinar."
+    },
+    {
+        "tema": "Seguro Prestamista Embutido (Venda Casada)",
+        "diretriz": "Esclareça o direito do consumidor: o seguro no empréstimo quase sempre é opcional, e o cliente pode recusar ou pedir o cancelamento se foi incluído sem aviso."
+    },
+    {
+        "tema": "Portabilidade de Crédito na Prática",
+        "diretriz": "Ensine que o cliente não é obrigado a ficar preso ao banco onde tem conta; ele pode transferir sua dívida gratuitamente para outro banco que ofereça juros menores."
+    },
+    {
+        "tema": "Desmistificando o Score de Crédito e o Cadastro Positivo",
+        "diretriz": "Desmascare golpistas que vendem 'aumento de score' e ensine o que realmente os algoritmos dos bancos avaliam (histórico de pagamento em dia e relacionamento bancário)."
+    },
+    {
+        "tema": "Direito de Amortização Antecipada com Desconto",
+        "diretriz": "Revele a regra do Banco Central (Resolução CMN) que obriga qualquer banco a dar desconto proporcional dos juros se o cliente adiantar parcelas de trás para frente."
+    },
+    {
+        "tema": "Perigos do Cartão de Crédito Consignado (RMC/RCC)",
+        "diretriz": "Explique a diferença entre o empréstimo consignado comum (com prazo fixo) e o saque no cartão consignado, que pode descontar o mínimo da folha por anos se não for quitado integralmente."
+    },
+    {
+        "tema": "Empréstimo com Garantia (Veículo, Imóvel ou FGTS)",
+        "diretriz": "Mostre por que oferecer uma garantia real derruba drasticamente os juros cobrados pelo banco e quais cuidados tomar para não comprometer o bem."
+    },
+    {
+        "tema": "Estratégias de Negociação de Dívidas Atrasadas",
+        "diretriz": "Ensine a diferença entre aceitar o primeiro parcelamento automático do aplicativo do banco (que costuma ter juros altos) versus negociar quitação à vista ou em feirões oficiais."
+    },
+    {
+        "tema": "Análise do Sistema Registrato do Banco Central",
+        "diretriz": "Apresente a ferramenta oficial e gratuita do Banco Central (Registrato / SCR) onde o cidadão descobre se tem contas abertas em seu CPF ou dívidas esquecidas nos bancos."
+    },
+    {
+        "tema": "Regra do Comprometimento Máximo de Renda (30%)",
+        "diretriz": "Oriente como calcular o limite seguro da parcela no orçamento familiar antes de contratar crédito, evitando que o empréstimo vire uma nova dor de cabeça."
+    }
+]
 
-# 5. Prompt de IA Focado em Estilo WhatsApp e Clareza
+VETOR_GATILHO_ZAP = [
+    {
+        "estilo": "Alerta de Utilidade Pública",
+        "foco": "Tom de aviso urgente para proteger amigos e familiares de perderem dinheiro por falta de informação."
+    },
+    {
+        "estilo": "Bastidor Bancário Revelado",
+        "foco": "Revelar uma regra oficial ou direito do consumidor que é público, mas que as instituições raramente explicam no balcão."
+    },
+    {
+        "estilo": "Alívio no Bolso e Economia Prática",
+        "foco": "Mostrar com clareza como uma simples mudança de escolha economiza centenas ou milhares de reais no fim do contrato."
+    },
+    {
+        "estilo": "Direito do Consumidor Financeiro",
+        "foco": "Fundamentar a dica nas regras de proteção ao cidadão e transparência exigidas pelo Banco Central."
+    },
+    {
+        "estilo": "Guia Rápido Anti-Sufoco",
+        "foco": "Orientação direta, acolhedora e passo a passo para quem precisa de fôlego financeiro imediato sem cair em ciladas."
+    }
+]
+
+# Evita repetir temas que já foram gerados recentemente olhando a pasta dicas/
+pastas_existentes = []
+if os.path.exists("dicas"):
+    pastas_existentes = os.listdir("dicas")
+
+# Semente diária determinística combinada com o histórico para garantir variedade
+random.seed(f"{hoje_dt.strftime('%Y%m%d')}-{len(pastas_existentes)}")
+publico_hoje = random.choice(VETOR_PUBLICO)
+tema_hoje = random.choice(VETOR_TEMAS)
+gatilho_hoje = random.choice(VETOR_GATILHO_ZAP)
+
+# 5. Prompt de IA Sênior: Focado em Conversão WhatsApp + Rigor Técnico YMYL
 prompt = f"""
-Você é um consultor financeiro sênior, especialista em crédito consciente.
-Escreva um artigo objetivo, com uma abordagem que desperte curiosidade logo no início e entregue uma solução clara.
-O texto deve ser extremamente escaneável, utilizando emojis estratégicos (como ✅, ⚠️, 💡, 📌) no início dos parágrafos ou tópicos para destacar as informações, lembrando o formato de mensagens de alto engajamento no WhatsApp.
+Você é um Consultor Financeiro Sênior e Especialista em Defesa do Consumidor Bancário do portal 'Como Fazer Empréstimo' (um domínio com anos de autoridade e reputação).
 
-TEMA DO DIA: {angulo_hoje['tema']} - {angulo_hoje['diretriz']}
-CONTEXTO ATUAL: {noticias_contexto}
+Sua missão é escrever um conteúdo diário de altíssimo valor que será compartilhado em grupos de WhatsApp.
+O leitor clicou em um link no WhatsApp atraído por uma promessa forte de utilidade. O seu texto DEVE entregar uma resposta completa, verdadeira, prática e reveladora, fazendo o visitante sentir que valeu muito a pena ter clicado.
 
-REGRAS:
-1. Linguagem simples, direta e protetiva.
-2. Insira emojis de destaque de forma elegante no início de frases-chave.
-3. Proibido clichês de IA (jornada, tapeçaria, inabalável, farol).
+CRUZAMENTO ESTRATÉGICO DE HOJE:
+- PÚBLICO-ALVO PRINCIPAL: {publico_hoje['perfil']} ({publico_hoje['contexto']})
+- TEMA CENTRAL: {tema_hoje['tema']} ({tema_hoje['diretriz']})
+- ÂNGULO DE ENGAJAMENTO WHATSAPP: {gatilho_hoje['estilo']} ({gatilho_hoje['foco']})
+- TERMÔMETRO ECONÔMICO DO DIA: {noticias_contexto}
 
-Retorne EXCLUSIVAMENTE um JSON puro e válido (sem blocos markdown):
+DIRETRIZES INEGOCIÁVEIS DE REPUTAÇÃO E VERACIDADE (COMPLIANCE YMYL):
+1. VERACIDADE ABSOLUTA: Jamais invente leis, taxas irreais ou promessas milagrosas (como 'empréstimo garantido sem análise' ou 'limpe seu nome em 24h'). Baseie-se exclusivamente na matemática financeira real, no Código de Defesa do Consumidor e nas boas práticas do Banco Central do Brasil.
+2. ENTREGA DE ALTO VALOR (RECOMPENSA DO CLIQUE): Não escreva textos genéricos ou superficiais. Explique o 'como funciona' e o 'passo a passo prático' no segundo e terceiro parágrafos para que o leitor saia mais inteligente e protegido.
+3. CONEXÃO NATURAL COM O SIMULADOR: Mostre que a melhor forma de não perder dinheiro é comparar o Custo Efetivo Total (CET) entre várias instituições confiáveis antes de fechar negócio.
+4. FORMATAÇÃO VISUAL ESTILO WHATSAPP: Escreva 4 parágrafos bem estruturados e fáceis de ler no celular. Comece CADA parágrafo com um único emoji estratégico (ex: ⚠️, 💡, 📌, ✅, 🔍) seguido de uma frase curta de impacto.
+5. PROIBIDO CLICHÊS DE IA: Nunca use palavras como 'jornada', 'tapeçaria', 'inabalável', 'farol', 'sinfonia', 'crucial' ou 'desbravar'. Use português claro, humano, respeitoso e direto.
+
+Retorne EXCLUSIVAMENTE um objeto JSON puro e válido (sem blocos markdown ```json):
 {{
-  "titulo": "Título com forte curiosidade (ex: O erro silencioso que faz seu empréstimo custar o dobro)",
-  "chamada_zap": "Uma frase de impacto curta gerando curiosidade para quem recebe no WhatsApp.",
+  "titulo": "Título magnético de alta curiosidade e utilidade real (60 a 85 caracteres, sem emojis no título)",
+  "chamada_zap": "Frase instigante de 1 a 2 linhas que desperta curiosidade imediata para ser enviada no WhatsApp da família ou amigos.",
   "paragrafos": [
-    "Parágrafo 1 com emoji inicial: O gancho que revela o problema oculto ou a dúvida principal.",
-    "Parágrafo 2 com emoji inicial: O esclarecimento prático, com orientações detalhadas passo a passo.",
-    "Parágrafo 3 com emoji inicial: A conclusão protetiva e orientações de segurança final."
+    "Parágrafo 1 (Inicie com 1 emoji): O Gancho e Identificação. Conecte-se imediatamente com a dor do público-alvo e revele por que a maioria das pessoas perde dinheiro ou corre risco nessa situação.",
+    "Parágrafo 2 (Inicie com 1 emoji): A Revelação Técnica Descomplicada. Explique a regra real, o funcionamento bancário ou o direito que resolve a dúvida prometida no título.",
+    "Parágrafo 3 (Inicie com 1 emoji): O Passo a Passo Prático. Entregue 2 ou 3 ações diretas e aplicáveis hoje mesmo para o leitor economizar, negociar melhor ou se proteger.",
+    "Parágrafo 4 (Inicie com 1 emoji): Conclusão Protetiva. Reforce a regra de segurança (nunca pagar taxas adiantadas) e oriente o leitor a sempre comparar propostas com calma."
   ]
 }}
 """
@@ -117,7 +227,7 @@ for nome_modelo in modelos_candidatos:
             raw_text = raw_text[inicio:fim + 1]
 
         dados = json.loads(raw_text.strip())
-        if chaves_obrigatorias.issubset(dados.keys()) and isinstance(dados["paragrafos"], list):
+        if chaves_obrigatorias.issubset(dados.keys()) and isinstance(dados["paragrafos"], list) and len(dados["paragrafos"]) >= 3:
             conteudo = dados
             print(f"✅ Conteúdo gerado com sucesso usando {nome_modelo}!")
             break
@@ -138,16 +248,27 @@ def criar_slug(texto):
 
 slug_artigo = criar_slug(conteudo["titulo"])
 caminho_pasta = f"dicas/{slug_artigo}"
-url_completa = f"https://www.comofazeremprestimo.com/{caminho_pasta}/"
+url_completa = f"[https://www.comofazeremprestimo.com/](https://www.comofazeremprestimo.com/){caminho_pasta}/"
 
-# 7. Renderização do Artigo
+# 7. Renderização do Artigo (Sem duplicar emojis caso a IA já tenha incluído)
 with open("template.html", "r", encoding="utf-8") as f:
     template = f.read()
 
-paragrafos_limpos = [f"<p class='mb-4'>✨ {html.escape(re.sub(r'<[^>]+>', '', str(p)).strip())}</p>" for p in conteudo["paragrafos"]]
-reflexao_html = "".join(paragrafos_limpos)
+paragrafos_limpos = []
+for p in conteudo["paragrafos"]:
+    texto_p = html.escape(re.sub(r'<[^>]+>', '', str(p)).strip())
+    paragrafos_limpos.append(f"<p class='mb-4'>{texto_p}</p>")
 
-texto_compartilhar = f"⚠️ *ALERTA E DICA FINANCEIRA* ⚠️\n\n{conteudo['chamada_zap']}\n\n👉 Leia os detalhes completos aqui:\n{url_completa}"
+reflexao_html = "\n".join(paragrafos_limpos)
+
+# Mensagem de WhatsApp altamente convidativa para grupos de família e amigos
+texto_compartilhar = (
+    f"💡 *UTILIDADE PÚBLICA FINANCEIRA*\n\n"
+    f"*{conteudo['titulo']}*\n\n"
+    f"{conteudo['chamada_zap']}\n\n"
+    f"👇 *Veja a explicação completa e proteja seu bolso:*\n"
+    f"{url_completa}"
+)
 texto_whatsapp_encoded = urllib.parse.quote(texto_compartilhar)
 
 # Varredura para coletar artigos para o rodapé
@@ -165,9 +286,9 @@ if os.path.exists(dir_dicas):
                         conteudo_art = f_art.read()
                         m_title = re.search(r'<title>(.*?)</title>', conteudo_art)
                         titulo_art = m_title.group(1).split("—")[0].strip() if m_title else pasta.replace("-", " ").title()
-                except:
+                except Exception:
                     titulo_art = pasta.replace("-", " ").title()
-                
+
                 artigos_cadastrados.append({
                     "titulo": titulo_art,
                     "url": f"../{pasta}/"
@@ -182,7 +303,7 @@ recomendados = random.sample(artigos_cadastrados[1:], min(3, len(artigos_cadastr
 html_recomendados = ""
 if recomendados:
     html_recomendados += '<div class="mt-5 pt-4 border-top">\n'
-    html_recomendados += '  <h4 class="fw-bold text-dark mb-3">📚 Outras Dicas e Alertas Financeiros:</h4>\n'
+    html_recomendados += '  <h4 class="fw-bold text-dark mb-3">📚 Outras Dicas e Alertas Importantes:</h4>\n'
     html_recomendados += '  <ul class="list-unstyled">\n'
     for rec in recomendados:
         html_recomendados += f'    <li class="mb-2"><a href="{rec["url"]}" class="text-warning fw-bold text-decoration-none">&rarr; {rec["titulo"]}</a></li>\n'
@@ -200,7 +321,6 @@ os.makedirs(caminho_pasta, exist_ok=True)
 with open(f"{caminho_pasta}/index.html", "w", encoding="utf-8") as f:
     f.write(html_final)
 
-
 # 8. Geração da Central de Dicas (`dicas/index.html`)
 lista_html_indice = ""
 for art in artigos_cadastrados:
@@ -209,12 +329,12 @@ for art in artigos_cadastrados:
     else:
         slug_da_pasta = art["url"].replace("../", "").replace("/", "")
         link_url = f"./{slug_da_pasta}/"
-    
+
     lista_html_indice += f"""
     <div class="card mb-4 shadow-sm border-0 border-start border-warning border-4">
       <div class="card-body p-4">
         <h3 class="h5 fw-bold mb-2"><a href="{link_url}" class="text-dark text-decoration-none">{art["titulo"]}</a></h3>
-        <a href="{link_url}" class="text-warning fw-bold text-decoration-none fs--1">Ler Dica Completa &rarr;</a>
+        <a href="{link_url}" class="text-warning fw-bold text-decoration-none fs--1">Ler Orientação Completa &rarr;</a>
       </div>
     </div>
     """
@@ -229,7 +349,7 @@ html_indice_central = """<!DOCTYPE html>
   <script src="../assets/js/monetization-config.js"></script>
   <script src="../assets/js/affiliate-manager.js" defer></script>
   <link href="../assets/css/theme.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="[https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap)" rel="stylesheet">
 </head>
 <body>
   <main class="main" id="top">
@@ -237,9 +357,9 @@ html_indice_central = """<!DOCTYPE html>
 
     <section class="py-6 bg-soft-primary">
       <div class="container text-center">
-        <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">EDUCAÇÃO FINANCEIRA</span>
+        <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">EDUCAÇÃO FINANCEIRA E PROTEÇÃO</span>
         <h1 class="fw-bold mb-3">Central de Dicas e Alertas</h1>
-        <p class="lead text-secondary">Artigos diários para proteger o seu bolso e orientar você a encontrar crédito com total segurança.</p>
+        <p class="lead text-secondary">Orientações diárias verificadas para proteger o seu bolso, evitar juros abusivos e encontrar crédito com segurança.</p>
       </div>
     </section>
 
@@ -248,7 +368,7 @@ html_indice_central = """<!DOCTYPE html>
         <div class="row justify-content-center">
           <div class="col-lg-8">
             REPLACE_LISTA_ARTIGOS
-            
+
             <div class="text-center mt-5">
               <a href="../index.html" class="btn btn-outline-secondary btn-md fw-bold">&larr; Voltar para a Página Principal</a>
             </div>
@@ -297,17 +417,16 @@ html_indice_central = """<!DOCTYPE html>
 with open(f"{dir_dicas}/index.html", "w", encoding="utf-8") as f_ind:
     f_ind.write(html_indice_central)
 
-
 # 9. Varredura Global Automática do Sitemap
-dominio_base = "https://www.comofazeremprestimo.com"
+dominio_base = "[https://www.comofazeremprestimo.com](https://www.comofazeremprestimo.com)"
 urls_encontradas = []
 
 for root, dirs, files in os.walk("."):
-    if ".git" in root or ".github" in root or "assets" in root or "vendors" in root or "components" in root:
+    if any(ignorado in root for ignorado in [".git", ".github", "assets", "vendors", "components"]):
         continue
-    
+
     for file in files:
-        if file.endswith(".html"):
+        if file.endswith(".html") and file != "template.html":
             caminho_relativo = os.path.join(root, file).replace("\\", "/")
             if caminho_relativo == "./index.html":
                 url = f"{dominio_base}/"
@@ -322,7 +441,7 @@ for root, dirs, files in os.walk("."):
 urls_encontradas = sorted(list(set(urls_encontradas)))
 
 sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+sitemap_xml += '<urlset xmlns="[http://www.sitemaps.org/schemas/sitemap/0.9](http://www.sitemaps.org/schemas/sitemap/0.9)">\n'
 
 for u in urls_encontradas:
     sitemap_xml += '  <url>\n'
@@ -335,4 +454,4 @@ sitemap_xml += '</urlset>'
 with open("sitemap.xml", "w", encoding="utf-8") as f:
     f.write(sitemap_xml)
 
-print(f"Sucesso: Central de Dicas e Artigo atualizados. Sitemap global reconstruído.")
+print(f"Sucesso: [{publico_hoje['perfil']}] x [{tema_hoje['tema']}] gerado em {caminho_pasta}.")
