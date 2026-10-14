@@ -10,7 +10,7 @@
   <title>{{TITULO}} — Como Fazer Empréstimo</title>
   <meta name="description" content="{{CHAMADA_ZAP}}">
 
-  <!-- Configuração Central de Monetização e Analytics com caminho relativo -->
+  <!-- Configuração Central de Analytics (Sem AdSense nas Dicas) -->
   <script src="../../assets/js/monetization-config.js"></script>
   <script src="../../assets/js/affiliate-manager.js" defer></script>
 
@@ -26,19 +26,16 @@
     <!-- BLOCO: Menu Modular (Carregado via JS) -->
     <div id="header-placeholder"></div>
 
-    <!-- BLOCO: Anúncio Superior -->
-    <div id="ad-top-placeholder" class="container text-center py-3"></div>
-
     <!-- Etapa 1: O Despertar da Curiosidade (Gancho para WhatsApp) -->
     <section class="pt-6 pb-4">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8 text-center py-4">
-            <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">ALERTA FINANCEIRO · {{DATA_EXTENSO}}</span>
+            <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">💡 ALERTA FINANCEIRO · {{DATA_EXTENSO}}</span>
             <h1 class="hero-title mb-3 fs-3 fs-md-2">{{TITULO}}</h1>
             <p class="lead text-secondary mb-4">{{CHAMADA_ZAP}}</p>
             
-            <!-- Botão de Encaminhar para o WhatsApp (Viralidade Orgânica) -->
+            <!-- Botão de Encaminhar para o WhatsApp -->
             <div class="mb-5">
               <a href="https://api.whatsapp.com/send?text={{TEXTO_WHATSAPP}}" target="_blank" class="btn btn-success btn-lg fw-bold px-4 shadow-sm">
                 <i class="fab fa-whatsapp me-2"></i> Encaminhar para Grupo de Família
@@ -49,7 +46,7 @@
       </div>
     </section>
 
-    <!-- Etapa 2: O Esclarecimento da Dúvida (Conteúdo Revelado) -->
+    <!-- Etapa 2: O Esclarecimento da Dúvida (Conteúdo Revelado com Ícones) -->
     <section class="py-5 bg-soft-primary">
       <div class="container">
         <div class="row justify-content-center">
@@ -59,10 +56,10 @@
                 {{REFLEXAO_HTML}}
               </article>
 
-              <!-- Funil de Monetização / Conversão (Logo abaixo da revelação) -->
+              <!-- Funil de Monetização / Conversão -->
               <div class="p-4 bg-warning bg-opacity-10 rounded-3 text-center border border-warning">
-                <h3 class="fw-bold text-dark mb-2">Precisa de crédito seguro e sem taxas abusivas?</h3>
-                <p class="text-secondary mb-4">Compare as melhores opções do mercado no nosso simulador oficial.</p>
+                <h3 class="fw-bold text-dark mb-2">🔒 Precisa de crédito seguro e sem taxas abusivas?</h3>
+                <p class="text-secondary mb-4">Compare as melhores opções do mercado com segurança no nosso simulador oficial.</p>
                 <a href="../../simulador.html" class="btn btn-warning btn-lg fw-bold px-5 primary-btn-shadow">SIMULAR EMPRÉSTIMO AGORA</a>
               </div>
             </div>
@@ -77,14 +74,14 @@
       </div>
     </section>
 
-    <!-- BLOCO: Rodapé Modular (Carregado via JS com caminho correto) -->
+    <!-- BLOCO: Rodapé Modular (Carregado via JS) -->
     <div id="footer-placeholder"></div>
 
   </main>
 
-  <!-- Scripts de Carregamento Modular -->
+  <!-- Scripts de Carregamento Modular com Correção de Caminho das Imagens do Rodapé -->
   <script>
-    function loadComponent(id, file) {
+    function loadComponent(id, file, callback) {
       fetch(file)
         .then(response => {
           if (!response.ok) throw new Error('Erro ao carregar ' + file);
@@ -92,13 +89,30 @@
         })
         .then(data => {
           document.getElementById(id).innerHTML = data;
+          if (callback) callback();
         })
         .catch(error => console.error(error));
     }
 
+    // Carrega o header e o footer ajustando os caminhos relativos internos das imagens/links se necessário
     loadComponent('header-placeholder', '../../components/header.html');
-    loadComponent('ad-top-placeholder', '../../components/ads-top.html');
-    loadComponent('footer-placeholder', '../../components/footer.html');
+    loadComponent('footer-placeholder', '../../components/footer.html', function() {
+      // Garante que qualquer imagem ou link do rodapé carregado via componente aponte para a raiz correta
+      const footerImages = document.querySelectorAll('#footer-placeholder img');
+      footerImages.forEach(img => {
+        const src = img.getAttribute('src');
+        if (src && !src.startsWith('http') && !src.startsWith('../../')) {
+          img.setAttribute('src', '../../' + src);
+        }
+      });
+      const footerLinks = document.querySelectorAll('#footer-placeholder a');
+      footerLinks.forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && !href.startsWith('http') && !href.startsWith('../../') && !href.startsWith('#')) {
+          a.setAttribute('href', '../../' + href);
+        }
+      });
+    });
   </script>
 
   <!-- Bibliotecas Base -->
