@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- SEO Dinâmico gerado pela IA -->
+  <title>{{TITULO}} — Como Fazer Empréstimo</title>
+  <meta name="description" content="{{CHAMADA_ZAP}}">
+
+  <!-- Configuração de Monetização e Analytics Originais -->
+  <script src="../../assets/js/monetization-config.js"></script>
+
+  <!-- Stylesheets com Caminho Relativo Ajustado -->
+  <link href="../../assets/css/theme.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <main class="main" id="top">
+    
+    <!-- BLOCO: Menu Modular -->
+    <div id="header-placeholder"></div>
+
+    <!-- Hero / Cabeçalho do Artigo Diário -->
+    <section class="pt-6 pb-4 bg-soft-primary">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center">
+            <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">DICA FINANCEIRA · {{DATA_EXTENSO}}</span>
+            <h1 class="hero-title mb-3 fs-3 fs-md-2">{{TITULO}}</h1>
+            <p class="lead text-secondary mb-4">{{CHAMADA_ZAP}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conteúdo Principal da Dica Gerado pela IA -->
+    <section class="py-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <article class="blog-content fs-1 text-secondary lh-lg">
+              {{REFLEXAO_HTML}}
+            </article>
+
+            <!-- Funil de Conversão: Direcionando o leitor para o simulador do site principal -->
+            <div class="card my-5 bg-warning bg-opacity-10 border-warning border-2 rounded-3 p-4 text-center">
+              <h3 class="fw-bold text-dark mb-2">Precisa de crédito com segurança?</h3>
+              <p class="text-secondary mb-4">Compare as melhores taxas do mercado agora mesmo em nosso simulador gratuito.</p>
+              <a href="../../simulador.html" class="btn btn-warning btn-lg fw-bold px-5">ACESSAR SIMULADOR DE EMPRÉSTIMO</a>
+            </div>
+
+            <!-- Navegação para voltar ao início -->
+            <div class="d-flex justify-content-center align-items-center mt-5 pt-4 border-top">
+              <a href="../../index.html" class="text-warning fw-bold text-decoration-none">&larr; Voltar para a Página Inicial</a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCO: Rodapé Modular -->
+    <div id="footer-placeholder"></div>
+
+  </main>
+
+  <!-- Scripts de Carregamento Modular com Caminho Relativo Ajustado -->
+  <script>
+    function loadComponent(id, file) {
+      fetch(file)
+        .then(response => {
+          if (!response.ok) throw new Error('Erro ao carregar ' + file);
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById(id).innerHTML = data;
+        })
+        .catch(error => console.error(error));
+    }
+
+    loadComponent('header-placeholder', '../../components/header.html');
+    loadComponent('footer-placeholder', '../../components/footer.html');
+  </script>
+
+  <!-- Bibliotecas Base -->
+  <script src="../../vendors/bootstrap/bootstrap.min.js"></script>
+  <script src="../../vendors/fontawesome/all.min.js"></script>
+</body>
+
+</html>
