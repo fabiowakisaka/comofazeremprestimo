@@ -140,18 +140,17 @@ slug_artigo = criar_slug(conteudo["titulo"])
 caminho_pasta = f"dicas/{slug_artigo}"
 url_completa = f"https://www.comofazeremprestimo.com/{caminho_pasta}/"
 
-# 7. Renderização e Sanitização do HTML atual
+# 7. Renderização do Artigo
 with open("template.html", "r", encoding="utf-8") as f:
     template = f.read()
 
 paragrafos_limpos = [f"<p class='mb-4'>✨ {html.escape(re.sub(r'<[^>]+>', '', str(p)).strip())}</p>" for p in conteudo["paragrafos"]]
 reflexao_html = "".join(paragrafos_limpos)
 
-# Texto formatado para o compartilhamento via WhatsApp
 texto_compartilhar = f"⚠️ *ALERTA E DICA FINANCEIRA* ⚠️\n\n{conteudo['chamada_zap']}\n\n👉 Leia os detalhes completos aqui:\n{url_completa}"
 texto_whatsapp_encoded = urllib.parse.quote(texto_compartilhar)
 
-# 7.1 Varredura de Artigos Anteriores para Construir as Recomendações do Rodapé e o Índice Geral
+# Varredura para coletar artigos para o rodapé
 artigos_cadastrados = []
 dir_dicas = "dicas"
 
@@ -161,7 +160,6 @@ if os.path.exists(dir_dicas):
         if os.path.isdir(caminho_p) and pasta != slug_artigo:
             index_path = os.path.join(caminho_p, "index.html")
             if os.path.exists(index_path):
-                # Tenta extrair o título real do HTML ou reconstrói a partir do slug
                 try:
                     with open(index_path, "r", encoding="utf-8") as f_art:
                         conteudo_art = f_art.read()
@@ -172,16 +170,14 @@ if os.path.exists(dir_dicas):
                 
                 artigos_cadastrados.append({
                     "titulo": titulo_art,
-                    "url": f"../{pasta}/" # Caminho relativo para artigos vizinhos
+                    "url": f"../{pasta}/"
                 })
 
-# Adiciona o artigo atual no topo da lista geral
 artigos_cadastrados.insert(0, {
     "titulo": conteudo["titulo"],
-    "url": "./" # Relativo para o próprio índice ou ajustado abaixo
+    "url": "./"
 })
 
-# Seleciona até 3 artigos aleatórios ou recentes para o rodapé do artigo atual
 recomendados = random.sample(artigos_cadastrados[1:], min(3, len(artigos_cadastrados) - 1)) if len(artigos_cadastrados) > 1 else []
 html_recomendados = ""
 if recomendados:
@@ -193,7 +189,6 @@ if recomendados:
     html_recomendados += '  </ul>\n'
     html_recomendados += '</div>\n'
 
-# Monta o HTML final da dica
 html_final = template \
     .replace("{{TITULO}}", html.escape(conteudo["titulo"])) \
     .replace("{{CHAMADA_ZAP}}", html.escape(conteudo["chamada_zap"])) \
@@ -206,21 +201,19 @@ with open(f"{caminho_pasta}/index.html", "w", encoding="utf-8") as f:
     f.write(html_final)
 
 
-# 8. Geração Automática do Índice Central de Dicas (`dicas/index.html`)
+# 8. Geração da Central de Dicas (`dicas/index.html`) com a mesma cara do site principal
 lista_html_indice = ""
 for art in artigos_cadastrados:
-    # Ajusta o link dependendo se é o artigo atual ou anterior na listagem do índice geral
     if art["url"] == "./":
         link_url = f"./{slug_artigo}/"
     else:
-        # Se veio da listagem de pastas, o link no index de dicas é direto pelo nome da pasta
         slug_da_pasta = art["url"].replace("../", "").replace("/", "")
         link_url = f"./{slug_da_pasta}/"
     
     lista_html_indice += f"""
-    <div class="card mb-3 shadow-sm border-0">
-      <div class="card-body">
-        <h3 class="h5 fw-bold"><a href="{link_url}" class="text-dark text-decoration-none">{art["titulo"]}</a></h3>
+    <div class="card mb-4 shadow-sm border-0 border-start border-warning border-4">
+      <div class="card-body p-4">
+        <h3 class="h5 fw-bold mb-2"><a href="{link_url}" class="text-dark text-decoration-none">{art["titulo"]}</a></h3>
         <a href="{link_url}" class="text-warning fw-bold text-decoration-none fs--1">Ler Dica Completa &rarr;</a>
       </div>
     </div>
@@ -230,31 +223,73 @@ html_indice_central = f"""<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Central de Dicas e Alertas Financeiros — Como Fazer Empréstimo</title>
+  <script src="../assets/js/monetization-config.js"></script>
+  <script src="../assets/js/affiliate-manager.js" defer></script>
   <link href="../assets/css/theme.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <main class="main" id="top">
+    <div id="header-placeholder"></div>
+
     <section class="py-6 bg-soft-primary">
       <div class="container text-center">
-        <h1 class="fw-bold mb-3">Central de Dicas e Educação Financeira</h1>
-        <p class="lead text-secondary">Artigos diários para proteger o seu bolso e ajudar você a encontrar crédito com segurança.</p>
-        <a href="../index.html" class="btn btn-warning fw-bold mt-2">&larr; Voltar para a Página Principal</a>
+        <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">EDUCAÇÃO FINANCEIRA</span>
+        <h1 class="fw-bold mb-3">Central de Dicas e Alertas</h1>
+        <p class="lead text-secondary">Artigos diários para proteger o seu bolso e orientar você a encontrar crédito com total segurança.</p>
       </div>
     </section>
+
     <section class="py-5">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8">
             {lista_html_indice}
+            
+            <div class="text-center mt-5">
+              <a href="../index.html" class="btn btn-outline-secondary btn-md fw-bold">&larr; Voltar para a Página Principal</a>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <div id="footer-placeholder"></div>
   </main>
+
+  <script>
+    function loadComponent(id, file, callback) {
+      fetch(file)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById(id).innerHTML = data;
+          if (callback) callback();
+        });
+    }
+    loadComponent('header-placeholder', '../components/header.html');
+    loadComponent('footer-placeholder', '../components/footer.html', function() {
+      const footerImages = document.querySelectorAll('#footer-placeholder img');
+      footerImages.forEach(img => {
+        const src = img.getAttribute('src');
+        if (src && !src.startsWith('http') && !src.startsWith('../')) {
+          img.setAttribute('src', '../' + src);
+        }
+      });
+      const footerLinks = document.querySelectorAll('#footer-placeholder a');
+      footerLinks.forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && !href.startsWith('http') && !href.startsWith('../') && !href.startsWith('#')) {
+          a.setAttribute('href', '../' + href);
+        }
+      });
+    });
+  </script>
+
   <script src="../vendors/bootstrap/bootstrap.min.js"></script>
+  <script src="../vendors/fontawesome/all.min.js"></script>
 </body>
 </html>
 """
@@ -263,7 +298,7 @@ with open(f"{dir_dicas}/index.html", "w", encoding="utf-8") as f_ind:
     f_ind.write(html_indice_central)
 
 
-# 9. Varredura Global Automática do Sitemap (Incluindo a Central de Dicas)
+# 9. Varredura Global Automática do Sitemap
 dominio_base = "https://www.comofazeremprestimo.com"
 urls_encontradas = []
 
@@ -274,7 +309,6 @@ for root, dirs, files in os.walk("."):
     for file in files:
         if file.endswith(".html"):
             caminho_relativo = os.path.join(root, file).replace("\\", "/")
-            
             if caminho_relativo == "./index.html":
                 url = f"{dominio_base}/"
             elif file == "index.html":
@@ -283,7 +317,6 @@ for root, dirs, files in os.walk("."):
             else:
                 limpo = caminho_relativo.replace("./", "")
                 url = f"{dominio_base}/{limpo}"
-            
             urls_encontradas.append(url)
 
 urls_encontradas = sorted(list(set(urls_encontradas)))
@@ -302,4 +335,4 @@ sitemap_xml += '</urlset>'
 with open("sitemap.xml", "w", encoding="utf-8") as f:
     f.write(sitemap_xml)
 
-print(f"Sucesso: Artigo gerado. Central de dicas atualizada. Sitemap global com {len(urls_encontradas)} URLs.")
+print(f"Sucesso: Central de Dicas e Artigo atualizados. Sitemap global reconstruído.")
