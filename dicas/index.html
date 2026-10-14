@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Central de Dicas e Alertas Financeiros — Como Fazer Empréstimo</title>
+  <script src="../assets/js/monetization-config.js"></script>
+  <script src="../assets/js/affiliate-manager.js" defer></script>
+  <link href="../assets/css/theme.css" rel="stylesheet" />
+  <link href="https://[fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap)" rel="stylesheet">
+</head>
+<body>
+  <main class="main" id="top">
+    <div id="header-placeholder"></div>
+
+    <section class="py-6 bg-soft-primary">
+      <div class="container text-center">
+        <span class="badge bg-soft-warning text-warning mb-3 py-2 px-3 fw-bold">EDUCAÇÃO FINANCEIRA E PROTEÇÃO</span>
+        <h1 class="fw-bold mb-3">Central de Dicas e Alertas</h1>
+        <p class="lead text-secondary">Orientações diárias verificadas para proteger o seu bolso, evitar juros abusivos e encontrar crédito com segurança.</p>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            
+    <div class="card mb-4 shadow-sm border-0 border-start border-warning border-4">
+      <div class="card-body p-4">
+        <h3 class="h5 fw-bold mb-2"><a href="./como-calcular-o-limite-de-credito-seguro-e-proteger-o-orcamento-familiar/" class="text-dark text-decoration-none">Como calcular o limite de crédito seguro e proteger o orçamento familiar</a></h3>
+        <a href="./como-calcular-o-limite-de-credito-seguro-e-proteger-o-orcamento-familiar/" class="text-warning fw-bold text-decoration-none fs--1">Ler Orientação Completa &rarr;</a>
+      </div>
+    </div>
+    
+
+            <div class="text-center mt-5">
+              <a href="../index.html" class="btn btn-outline-secondary btn-md fw-bold">&larr; Voltar para a Página Principal</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+  </main>
+
+  <script>
+    function loadComponent(id, file, callback) {
+      fetch(file)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById(id).innerHTML = data;
+          if (callback) callback();
+        });
+    }
+    loadComponent('header-placeholder', '../components/header.html');
+    loadComponent('footer-placeholder', '../components/footer.html', function() {
+      const footerImages = document.querySelectorAll('#footer-placeholder img');
+      footerImages.forEach(img => {
+        const src = img.getAttribute('src');
+        if (src && !src.startsWith('http') && !src.startsWith('../')) {
+          img.setAttribute('src', '../' + src);
+        }
+      });
+      const footerLinks = document.querySelectorAll('#footer-placeholder a');
+      footerLinks.forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && !href.startsWith('http') && !href.startsWith('../') && !href.startsWith('#')) {
+          a.setAttribute('href', '../' + href);
+        }
+      });
+    });
+  </script>
+
+  <script src="../vendors/bootstrap/bootstrap.min.js"></script>
+  <script src="../vendors/fontawesome/all.min.js"></script>
+</body>
+</html>
