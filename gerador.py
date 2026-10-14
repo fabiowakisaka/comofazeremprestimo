@@ -140,7 +140,7 @@ slug_artigo = criar_slug(conteudo["titulo"])
 caminho_pasta = f"dicas/{slug_artigo}"
 url_completa = f"https://www.comofazeremprestimo.com/{caminho_pasta}/"
 
-# 7. Renderização e Sanitização do HTML
+# 7. Renderização e Sanitização do HTML atual
 with open("template.html", "r", encoding="utf-8") as f:
     template = f.read()
 
@@ -151,24 +151,123 @@ reflexao_html = "".join(paragrafos_limpos)
 texto_compartilhar = f"⚠️ *ALERTA E DICA FINANCEIRA* ⚠️\n\n{conteudo['chamada_zap']}\n\n👉 Leia os detalhes completos aqui:\n{url_completa}"
 texto_whatsapp_encoded = urllib.parse.quote(texto_compartilhar)
 
+# 7.1 Varredura de Artigos Anteriores para Construir as Recomendações do Rodapé e o Índice Geral
+artigos_cadastrados = []
+dir_dicas = "dicas"
+
+if os.path.exists(dir_dicas):
+    for pasta in os.listdir(dir_dicas):
+        caminho_p = os.path.join(dir_dicas, pasta)
+        if os.path.isdir(caminho_p) and pasta != slug_artigo:
+            index_path = os.path.join(caminho_p, "index.html")
+            if os.path.exists(index_path):
+                # Tenta extrair o título real do HTML ou reconstrói a partir do slug
+                try:
+                    with open(index_path, "r", encoding="utf-8") as f_art:
+                        conteudo_art = f_art.read()
+                        m_title = re.search(r'<title>(.*?)</title>', conteudo_art)
+                        titulo_art = m_title.group(1).split("—")[0].strip() if m_title else pasta.replace("-", " ").title()
+                except:
+                    titulo_art = pasta.replace("-", " ").title()
+                
+                artigos_cadastrados.append({
+                    "titulo": titulo_art,
+                    "url": f"../{pasta}/" # Caminho relativo para artigos vizinhos
+                })
+
+# Adiciona o artigo atual no topo da lista geral
+artigos_cadastrados.insert(0, {
+    "titulo": conteudo["titulo"],
+    "url": "./" # Relativo para o próprio índice ou ajustado abaixo
+})
+
+# Seleciona até 3 artigos aleatórios ou recentes para o rodapé do artigo atual
+recomendados = random.sample(artigos_cadastrados[1:], min(3, len(artigos_cadastrados) - 1)) if len(artigos_cadastrados) > 1 else []
+html_recomendados = ""
+if recomendados:
+    html_recomendados += '<div class="mt-5 pt-4 border-top">\n'
+    html_recomendados += '  <h4 class="fw-bold text-dark mb-3">📚 Outras Dicas e Alertas Financeiros:</h4>\n'
+    html_recomendados += '  <ul class="list-unstyled">\n'
+    for rec in recomendados:
+        html_recomendados += f'    <li class="mb-2"><a href="{rec["url"]}" class="text-warning fw-bold text-decoration-none">&rarr; {rec["titulo"]}</a></li>\n'
+    html_recomendados += '  </ul>\n'
+    html_recomendados += '</div>\n'
+
+# Monta o HTML final da dica
 html_final = template \
     .replace("{{TITULO}}", html.escape(conteudo["titulo"])) \
     .replace("{{CHAMADA_ZAP}}", html.escape(conteudo["chamada_zap"])) \
     .replace("{{DATA_EXTENSO}}", data_extenso) \
-    .replace("{{REFLEXAO_HTML}}", reflexao_html) \
+    .replace("{{REFLEXAO_HTML}}", reflexao_html + html_recomendados) \
     .replace("{{TEXTO_WHATSAPP}}", texto_whatsapp_encoded)
 
 os.makedirs(caminho_pasta, exist_ok=True)
 with open(f"{caminho_pasta}/index.html", "w", encoding="utf-8") as f:
     f.write(html_final)
 
-# 8. Varredura Global Automática do Sitemap (Sitemap Crawler)
+
+# 8. Geração Automática do Índice Central de Dicas (`dicas/index.html`)
+lista_html_indice = ""
+for art in artigos_cadastrados:
+    # Ajusta o link dependendo se é o artigo atual ou anterior na listagem do índice geral
+    if art["url"] == "./":
+        link_url = f"./{slug_artigo}/"
+    else:
+        # Se veio da listagem de pastas, o link no index de dicas é direto pelo nome da pasta
+        slug_da_pasta = art["url"].replace("../", "").replace("/", "")
+        link_url = f"./{slug_da_pasta}/"
+    
+    lista_html_indice += f"""
+    <div class="card mb-3 shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="h5 fw-bold"><a href="{link_url}" class="text-dark text-decoration-none">{art["titulo"]}</a></h3>
+        <a href="{link_url}" class="text-warning fw-bold text-decoration-none fs--1">Ler Dica Completa &rarr;</a>
+      </div>
+    </div>
+    """
+
+html_indice_central = f"""<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Central de Dicas e Alertas Financeiros — Como Fazer Empréstimo</title>
+  <link href="../assets/css/theme.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="main" id="top">
+    <section class="py-6 bg-soft-primary">
+      <div class="container text-center">
+        <h1 class="fw-bold mb-3">Central de Dicas e Educação Financeira</h1>
+        <p class="lead text-secondary">Artigos diários para proteger o seu bolso e ajudar você a encontrar crédito com segurança.</p>
+        <a href="../index.html" class="btn btn-warning fw-bold mt-2">&larr; Voltar para a Página Principal</a>
+      </div>
+    </section>
+    <section class="py-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            {lista_html_indice}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="../vendors/bootstrap/bootstrap.min.js"></script>
+</body>
+</html>
+"""
+
+with open(f"{dir_dicas}/index.html", "w", encoding="utf-8") as f_ind:
+    f_ind.write(html_indice_central)
+
+
+# 9. Varredura Global Automática do Sitemap (Incluindo a Central de Dicas)
 dominio_base = "https://www.comofazeremprestimo.com"
 urls_encontradas = []
 
-# Varre o diretório à procura de index.html e páginas html principais
 for root, dirs, files in os.walk("."):
-    # Ignora pastas ocultas como .git e .github
     if ".git" in root or ".github" in root or "assets" in root or "vendors" in root or "components" in root:
         continue
     
@@ -176,24 +275,19 @@ for root, dirs, files in os.walk("."):
         if file.endswith(".html"):
             caminho_relativo = os.path.join(root, file).replace("\\", "/")
             
-            # Converte o caminho do arquivo para URL amigável
             if caminho_relativo == "./index.html":
                 url = f"{dominio_base}/"
             elif file == "index.html":
-                # Remove o './' inicial e o '/index.html' final para virar uma pasta limpa com barra
                 limpo = caminho_relativo.replace("./", "").replace("/index.html", "/")
                 url = f"{dominio_base}/{limpo}"
             else:
-                # Páginas soltas (ex: simulador.html)
                 limpo = caminho_relativo.replace("./", "")
                 url = f"{dominio_base}/{limpo}"
             
             urls_encontradas.append(url)
 
-# Remove duplicadas e ordena para manter o sitemap limpo
 urls_encontradas = sorted(list(set(urls_encontradas)))
 
-# Constrói o XML do Sitemap do zero com todas as páginas ativas
 sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
 sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
 
@@ -208,4 +302,4 @@ sitemap_xml += '</urlset>'
 with open("sitemap.xml", "w", encoding="utf-8") as f:
     f.write(sitemap_xml)
 
-print(f"Sucesso: Artigo gerado em {caminho_pasta}. Sitemap global reconstruído com {len(urls_encontradas)} URLs indexadas.")
+print(f"Sucesso: Artigo gerado. Central de dicas atualizada. Sitemap global com {len(urls_encontradas)} URLs.")
