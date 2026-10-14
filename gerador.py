@@ -201,7 +201,7 @@ with open(f"{caminho_pasta}/index.html", "w", encoding="utf-8") as f:
     f.write(html_final)
 
 
-# 8. Geração da Central de Dicas (`dicas/index.html`) com a mesma cara do site principal
+# 8. Geração da Central de Dicas (`dicas/index.html`)
 lista_html_indice = ""
 for art in artigos_cadastrados:
     if art["url"] == "./":
@@ -219,7 +219,7 @@ for art in artigos_cadastrados:
     </div>
     """
 
-html_indice_central = f"""<!DOCTYPE html>
+html_indice_central = """<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
   <meta charset="utf-8">
@@ -247,7 +247,7 @@ html_indice_central = f"""<!DOCTYPE html>
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8">
-            {lista_html_indice}
+            REPLACE_LISTA_ARTIGOS
             
             <div class="text-center mt-5">
               <a href="../index.html" class="btn btn-outline-secondary btn-md fw-bold">&larr; Voltar para a Página Principal</a>
@@ -292,7 +292,7 @@ html_indice_central = f"""<!DOCTYPE html>
   <script src="../vendors/fontawesome/all.min.js"></script>
 </body>
 </html>
-"""
+""".replace("REPLACE_LISTA_ARTIGOS", lista_html_indice)
 
 with open(f"{dir_dicas}/index.html", "w", encoding="utf-8") as f_ind:
     f_ind.write(html_indice_central)
