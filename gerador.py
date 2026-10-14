@@ -56,26 +56,28 @@ ANGULOS_FINANCEIROS = [
 random.seed(hoje_dt.strftime("%Y%m%d"))
 angulo_hoje = random.choice(ANGULOS_FINANCEIROS)
 
-# 5. Prompt de IA Focado em Curiosidade e Utilidade
+# 5. Prompt de IA Focado em Estilo WhatsApp e Clareza
 prompt = f"""
 Você é um consultor financeiro sênior, especialista em crédito consciente.
 Escreva um artigo objetivo, com uma abordagem que desperte curiosidade logo no início e entregue uma solução clara.
+O texto deve ser extremamente escaneável, utilizando emojis estratégicos (como ✅, ⚠️, 💡, 📌) no início dos parágrafos ou tópicos para destacar as informações, lembrando o formato de mensagens de alto engajamento no WhatsApp.
 
 TEMA DO DIA: {angulo_hoje['tema']} - {angulo_hoje['diretriz']}
 CONTEXTO ATUAL: {noticias_contexto}
 
 REGRAS:
 1. Linguagem simples, direta e protetiva.
-2. Proibido clichês de IA (jornada, tapeçaria, inabalável, farol).
+2. Insira emojis de destaque de forma elegante no início de frases-chave.
+3. Proibido clichês de IA (jornada, tapeçaria, inabalável, farol).
 
 Retorne EXCLUSIVAMENTE um JSON puro e válido (sem blocos markdown):
 {{
   "titulo": "Título com forte curiosidade (ex: O erro silencioso que faz seu empréstimo custar o dobro)",
   "chamada_zap": "Uma frase de impacto curta gerando curiosidade para quem recebe no WhatsApp.",
   "paragrafos": [
-    "Parágrafo 1: O gancho que revela o problema oculto ou a dúvida principal.",
-    "Parágrafo 2: O esclarecimento prático, com orientações detalhadas passo a passo.",
-    "Parágrafo 3: A conclusão protetiva e orientações de segurança."
+    "Parágrafo 1 com emoji inicial: O gancho que revela o problema oculto ou a dúvida principal.",
+    "Parágrafo 2 com emoji inicial: O esclarecimento prático, com orientações detalhadas passo a passo.",
+    "Parágrafo 3 com emoji inicial: A conclusão protetiva e orientações de segurança final."
   ]
 }}
 """
@@ -142,7 +144,7 @@ url_completa = f"https://www.comofazeremprestimo.com/{caminho_pasta}/"
 with open("template.html", "r", encoding="utf-8") as f:
     template = f.read()
 
-paragrafos_limpos = [f"<p>{html.escape(re.sub(r'<[^>]+>', '', str(p)).strip())}</p>" for p in conteudo["paragrafos"]]
+paragrafos_limpos = [f"<p class='mb-4'>✨ {html.escape(re.sub(r'<[^>]+>', '', str(p)).strip())}</p>" for p in conteudo["paragrafos"]]
 reflexao_html = "".join(paragrafos_limpos)
 
 # Texto formatado para o compartilhamento via WhatsApp
@@ -174,4 +176,4 @@ if url_completa not in sitemap_content:
     with open(sitemap_path, "w", encoding="utf-8") as f:
         f.write(sitemap_content)
 
-print(f"Sucesso: Artigo gerado em {caminho_pasta} com funil e WhatsApp configurados.")
+print(f"Sucesso: Artigo gerado em {caminho_pasta} com ícones e sem AdSense.")
