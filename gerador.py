@@ -19,6 +19,12 @@ if not API_KEY:
 
 client = genai.Client(api_key=API_KEY)
 
+# Variáveis de protocolo separadas para impedir que editores injetem Markdown [url](url) ao colar
+PROTO_HTTPS = "https" + "://"
+PROTO_HTTP = "http" + "://"
+DOMINIO_LIMPO = "comofazeremprestimo.com"
+DOMINIO_BASE = f"{PROTO_HTTPS}{DOMINIO_LIMPO}"
+
 # 2. Tratamento de Datas
 hoje_dt = datetime.now()
 data_hoje_iso = hoje_dt.strftime("%Y-%m-%d")
@@ -30,7 +36,7 @@ data_extenso = f"{dias_semana[hoje_dt.weekday()]}, {hoje_dt.day} de {meses[hoje_
 # 3. Termômetro Social (Notícias de Economia do G1)
 def obter_termometro_noticias():
     try:
-        url = "https://g1.globo.com/rss/g1/economia/"
+        url = f"{PROTO_HTTPS}g1.globo.com/rss/g1/economia/"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         xml_data = urllib.request.urlopen(req, timeout=6).read()
         root = ET.fromstring(xml_data)
@@ -248,7 +254,7 @@ def criar_slug(texto):
 
 slug_artigo = criar_slug(conteudo["titulo"])
 caminho_pasta = f"dicas/{slug_artigo}"
-url_completa = f"[https://www.comofazeremprestimo.com/](https://www.comofazeremprestimo.com/){caminho_pasta}/"
+url_completa = f"{DOMINIO_BASE}/{caminho_pasta}/"
 
 # 7. Renderização do Artigo (Sem duplicar emojis caso a IA já tenha incluído)
 with open("template.html", "r", encoding="utf-8") as f:
@@ -261,7 +267,7 @@ for p in conteudo["paragrafos"]:
 
 reflexao_html = "\n".join(paragrafos_limpos)
 
-# Mensagem de WhatsApp altamente convidativa para grupos de família e amigos
+# Mensagem de WhatsApp limpa e sem risco de colchetes Markdown
 texto_compartilhar = (
     f"💡 *UTILIDADE PÚBLICA FINANCEIRA*\n\n"
     f"*{conteudo['titulo']}*\n\n"
@@ -339,6 +345,8 @@ for art in artigos_cadastrados:
     </div>
     """
 
+url_google_fonts = f"{PROTO_HTTPS}[fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap)"
+
 html_indice_central = """<!DOCTYPE html>
 <html lang="pt-BR" dir="ltr">
 <head>
@@ -349,7 +357,7 @@ html_indice_central = """<!DOCTYPE html>
   <script src="../assets/js/monetization-config.js"></script>
   <script src="../assets/js/affiliate-manager.js" defer></script>
   <link href="../assets/css/theme.css" rel="stylesheet" />
-  <link href="[https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap)" rel="stylesheet">
+  <link href="REPLACE_GOOGLE_FONTS" rel="stylesheet">
 </head>
 <body>
   <main class="main" id="top">
@@ -412,13 +420,12 @@ html_indice_central = """<!DOCTYPE html>
   <script src="../vendors/fontawesome/all.min.js"></script>
 </body>
 </html>
-""".replace("REPLACE_LISTA_ARTIGOS", lista_html_indice)
+""".replace("REPLACE_GOOGLE_FONTS", url_google_fonts).replace("REPLACE_LISTA_ARTIGOS", lista_html_indice)
 
 with open(f"{dir_dicas}/index.html", "w", encoding="utf-8") as f_ind:
     f_ind.write(html_indice_central)
 
 # 9. Varredura Global Automática do Sitemap
-dominio_base = "[https://www.comofazeremprestimo.com](https://www.comofazeremprestimo.com)"
 urls_encontradas = []
 
 for root, dirs, files in os.walk("."):
@@ -429,19 +436,20 @@ for root, dirs, files in os.walk("."):
         if file.endswith(".html") and file != "template.html":
             caminho_relativo = os.path.join(root, file).replace("\\", "/")
             if caminho_relativo == "./index.html":
-                url = f"{dominio_base}/"
+                url = f"{DOMINIO_BASE}/"
             elif file == "index.html":
                 limpo = caminho_relativo.replace("./", "").replace("/index.html", "/")
-                url = f"{dominio_base}/{limpo}"
+                url = f"{DOMINIO_BASE}/{limpo}"
             else:
                 limpo = caminho_relativo.replace("./", "")
-                url = f"{dominio_base}/{limpo}"
+                url = f"{DOMINIO_BASE}/{limpo}"
             urls_encontradas.append(url)
 
 urls_encontradas = sorted(list(set(urls_encontradas)))
 
+schema_sitemaps = f"{PROTO_HTTP}www.sitemaps.org/schemas/sitemap/0.9"
 sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-sitemap_xml += '<urlset xmlns="[http://www.sitemaps.org/schemas/sitemap/0.9](http://www.sitemaps.org/schemas/sitemap/0.9)">\n'
+sitemap_xml += f'<urlset xmlns="{schema_sitemaps}">\n'
 
 for u in urls_encontradas:
     sitemap_xml += '  <url>\n'
