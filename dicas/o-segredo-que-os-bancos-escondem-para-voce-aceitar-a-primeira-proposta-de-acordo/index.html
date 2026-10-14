@@ -10,7 +10,7 @@
   <title>O segredo que os bancos escondem para você aceitar a primeira proposta de acordo — Como Fazer Empréstimo</title>
   <meta name="description" content="Descubra como conseguir descontos reais e tirar o seu nome do vermelho sem cair em armadilhas.">
 
-  <!-- Configuração Central de Analytics (Sem AdSense nas Dicas) -->
+  <!-- Configuração Central de Analytics (Sem AdSense nos Artigos) -->
   <script src="../../assets/js/monetization-config.js"></script>
   <script src="../../assets/js/affiliate-manager.js" defer></script>
 
@@ -23,7 +23,7 @@
 
   <main class="main" id="top">
     
-    <!-- BLOCO: Menu Modular (Carregado via JS) -->
+    <!-- BLOCO: Menu Modular -->
     <div id="header-placeholder"></div>
 
     <!-- Etapa 1: O Despertar da Curiosidade (Gancho para WhatsApp) -->
@@ -53,7 +53,7 @@
           <div class="col-lg-8">
             <div class="p-5 bg-white rounded-3 shadow-sm border border-2 border-warning">
               <article class="blog-content fs-1 text-secondary lh-lg mb-5">
-                <p class='mb-4'>✨ 🤔 Você sabia que o primeiro valor oferecido pela instituição financeira para quitar sua dívida costuma ser o mais desvantajoso para o seu bolso? Muitas pessoas aceitam a primeira ligação de cobrança por desespero, sem saber que o sistema de recuperação de crédito possui margens ocultas de até 90% de desconto para quem sabe o momento certo de negociar.</p><p class='mb-4'>✨ 💡 Para conseguir um acordo realmente justo, o caminho exige estratégia e paciência: guarde um valor mensal fixo antes de ligar para a central, recuse a primeira proposta e aguarde o final do mês ou do trimestre, quando os assessores de cobrança recebem metas agressivas para fechar contratos com abatimentos expressivos.</p><p class='mb-4'>✨ ✅ Lembre-se sempre de exigir o boleto oficial diretamente pelos canais seguros do banco e nunca faça Pix para contas de terceiros. Negociar com inteligência financeira é o primeiro passo para retomar o controle do seu orçamento e construir um futuro livre de juros abusivos.</p><div class="mt-5 pt-4 border-top">
+                <p class='mb-4'>✨ ⚠️ Você sabia que aceitar a primeira ligação do banco com proposta de acordo costuma ser o pior negócio para o seu bolso? Muitas instituições financeiras inflacionam os juros e oferecem descontos ilusórios, contando com a pressa e a vergonha do consumidor para fechar a conta rápido.</p><p class='mb-4'>✨ 💡 Para conseguir um desconto real e definitivo, a estratégia correta exige paciência e método: junte dinheiro primeiro, espere a dívida envelhecer para o banco perder o medo de ficar sem receber, e faça uma contraproposta baseada estritamente no valor que você pode pagar à vista sem comprometer sua sobrevivência.</p><p class='mb-4'>✨ ✅ Proteja sempre o seu orçamento familiar antes de assinar qualquer papel e lembre-se de que negociar com inteligência é um direito seu, não um favor do gerente.</p><div class="mt-5 pt-4 border-top">
   <h4 class="fw-bold text-dark mb-3">📚 Outras Dicas e Alertas Financeiros:</h4>
   <ul class="list-unstyled">
     <li class="mb-2"><a href="../o-segredo-que-os-bancos-escondem-para-voce-aceitar-o-primeiro-acordo-da-divida/" class="text-warning fw-bold text-decoration-none">&rarr; O segredo que os bancos escondem para você aceitar o primeiro acordo da dívida</a></li>
@@ -73,7 +73,7 @@
 
             <!-- Navegação de Retorno -->
             <div class="text-center mt-5">
-              <a href="../../index.html" class="text-secondary fw-bold text-decoration-none">&larr; Voltar para a Página Inicial</a>
+              <a href="../index.html" class="text-secondary fw-bold text-decoration-none">&larr; Voltar para a Central de Dicas</a>
             </div>
 
           </div>
@@ -81,12 +81,12 @@
       </div>
     </section>
 
-    <!-- BLOCO: Rodapé Modular (Carregado via JS) -->
+    <!-- BLOCO: Rodapé Modular -->
     <div id="footer-placeholder"></div>
 
   </main>
 
-  <!-- Scripts de Carregamento Modular com Correção de Caminho das Imagens do Rodapé -->
+  <!-- Scripts de Carregamento Modular -->
   <script>
     function loadComponent(id, file, callback) {
       fetch(file)
@@ -101,10 +101,8 @@
         .catch(error => console.error(error));
     }
 
-    // Carrega o header e o footer ajustando os caminhos relativos internos das imagens/links se necessário
     loadComponent('header-placeholder', '../../components/header.html');
     loadComponent('footer-placeholder', '../../components/footer.html', function() {
-      // Garante que qualquer imagem ou link do rodapé carregado via componente aponte para a raiz correta
       const footerImages = document.querySelectorAll('#footer-placeholder img');
       footerImages.forEach(img => {
         const src = img.getAttribute('src');
