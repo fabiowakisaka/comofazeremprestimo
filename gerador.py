@@ -3,6 +3,7 @@ import re
 import sys
 import json
 import html
+import urllib.parse
 import unicodedata
 import random
 import urllib.request
@@ -55,10 +56,10 @@ ANGULOS_FINANCEIROS = [
 random.seed(hoje_dt.strftime("%Y%m%d"))
 angulo_hoje = random.choice(ANGULOS_FINANCEIROS)
 
-# 5. Prompt de IA Focado em SEO e Utilidade
+# 5. Prompt de IA Focado em Curiosidade e Utilidade
 prompt = f"""
-Você é um consultor financeiro sênior, especialista em crédito consciente e educação financeira.
-Escreva um artigo objetivo, claro e útil para o cidadão brasileiro.
+Você é um consultor financeiro sênior, especialista em crédito consciente.
+Escreva um artigo objetivo, com uma abordagem que desperte curiosidade logo no início e entregue uma solução clara.
 
 TEMA DO DIA: {angulo_hoje['tema']} - {angulo_hoje['diretriz']}
 CONTEXTO ATUAL: {noticias_contexto}
@@ -69,12 +70,12 @@ REGRAS:
 
 Retorne EXCLUSIVAMENTE um JSON puro e válido (sem blocos markdown):
 {{
-  "titulo": "Título forte voltado para SEO (ex: Como identificar o golpe do falso empréstimo em 3 passos)",
-  "chamada_zap": "Uma frase de resumo impactante de 1 linha.",
+  "titulo": "Título com forte curiosidade (ex: O erro silencioso que faz seu empréstimo custar o dobro)",
+  "chamada_zap": "Uma frase de impacto curta gerando curiosidade para quem recebe no WhatsApp.",
   "paragrafos": [
-    "Parágrafo 1: Introdução ao problema.",
-    "Parágrafo 2: Desenvolvimento prático e orientações.",
-    "Parágrafo 3: Conclusão com alerta de segurança."
+    "Parágrafo 1: O gancho que revela o problema oculto ou a dúvida principal.",
+    "Parágrafo 2: O esclarecimento prático, com orientações detalhadas passo a passo.",
+    "Parágrafo 3: A conclusão protetiva e orientações de segurança."
   ]
 }}
 """
@@ -125,7 +126,7 @@ if not conteudo:
     print("❌ ERRO CRÍTICO: Falha em todos os modelos Gemini. Abortando script.")
     sys.exit(1)
 
-# 6. Função para criar Slug Amigável (Igual ao Archivos Ocultos)
+# 6. Função para criar Slug Amigável
 def criar_slug(texto):
     nfkd = unicodedata.normalize('NFKD', texto)
     palavra_sem_acento = "".join([c for c in nfkd if not unicodedata.combining(c)])
@@ -135,6 +136,7 @@ def criar_slug(texto):
 
 slug_artigo = criar_slug(conteudo["titulo"])
 caminho_pasta = f"dicas/{slug_artigo}"
+url_completa = f"https://www.comofazeremprestimo.com/{caminho_pasta}/"
 
 # 7. Renderização e Sanitização do HTML
 with open("template.html", "r", encoding="utf-8") as f:
@@ -143,30 +145,33 @@ with open("template.html", "r", encoding="utf-8") as f:
 paragrafos_limpos = [f"<p>{html.escape(re.sub(r'<[^>]+>', '', str(p)).strip())}</p>" for p in conteudo["paragrafos"]]
 reflexao_html = "".join(paragrafos_limpos)
 
+# Texto formatado para o compartilhamento via WhatsApp
+texto_compartilhar = f"⚠️ *ALERTA E DICA FINANCEIRA* ⚠️\n\n{conteudo['chamada_zap']}\n\n👉 Leia os detalhes completos aqui:\n{url_completa}"
+texto_whatsapp_encoded = urllib.parse.quote(texto_compartilhar)
+
 html_final = template \
     .replace("{{TITULO}}", html.escape(conteudo["titulo"])) \
     .replace("{{CHAMADA_ZAP}}", html.escape(conteudo["chamada_zap"])) \
     .replace("{{DATA_EXTENSO}}", data_extenso) \
-    .replace("{{REFLEXAO_HTML}}", reflexao_html)
+    .replace("{{REFLEXAO_HTML}}", reflexao_html) \
+    .replace("{{TEXTO_WHATSAPP}}", texto_whatsapp_encoded)
 
 os.makedirs(caminho_pasta, exist_ok=True)
 with open(f"{caminho_pasta}/index.html", "w", encoding="utf-8") as f:
     f.write(html_final)
 
-# 8. Atualização Automática do Sitemap (`sitemap.xml`) com o Slug
+# 8. Atualização Automática do Sitemap (`sitemap.xml`)
 sitemap_path = "sitemap.xml"
-url_diaria = f"https://www.comofazeremprestimo.com/{caminho_pasta}/"
-
 if os.path.exists(sitemap_path):
     with open(sitemap_path, "r", encoding="utf-8") as f:
         sitemap_content = f.read()
 else:
     sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>'
 
-if url_diaria not in sitemap_content:
-    nova_url_xml = f'  <url>\n    <loc>{url_diaria}</loc>\n    <lastmod>{data_hoje_iso}</lastmod>\n  </url>\n</urlset>'
+if url_completa not in sitemap_content:
+    nova_url_xml = f'  <url>\n    <loc>{url_completa}</loc>\n    <lastmod>{data_hoje_iso}</lastmod>\n  </url>\n</urlset>'
     sitemap_content = sitemap_content.replace('</urlset>', nova_url_xml)
     with open(sitemap_path, "w", encoding="utf-8") as f:
         f.write(sitemap_content)
 
-print(f"Sucesso: Artigo gerado com slug em {caminho_pasta}. Sitemap atualizado.")
+print(f"Sucesso: Artigo gerado em {caminho_pasta} com funil e WhatsApp configurados.")
