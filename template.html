@@ -10,7 +10,7 @@
   <title>{{TITULO}} — Como Fazer Empréstimo</title>
   <meta name="description" content="{{CHAMADA_ZAP}}">
 
-  <!-- Configuração Central de Analytics (Sem AdSense nas Dicas) -->
+  <!-- Configuração Central de Analytics (Sem AdSense nos Artigos) -->
   <script src="../../assets/js/monetization-config.js"></script>
   <script src="../../assets/js/affiliate-manager.js" defer></script>
 
@@ -23,7 +23,7 @@
 
   <main class="main" id="top">
     
-    <!-- BLOCO: Menu Modular (Carregado via JS) -->
+    <!-- BLOCO: Menu Modular -->
     <div id="header-placeholder"></div>
 
     <!-- Etapa 1: O Despertar da Curiosidade (Gancho para WhatsApp) -->
@@ -66,7 +66,7 @@
 
             <!-- Navegação de Retorno -->
             <div class="text-center mt-5">
-              <a href="../../index.html" class="text-secondary fw-bold text-decoration-none">&larr; Voltar para a Página Inicial</a>
+              <a href="../index.html" class="text-secondary fw-bold text-decoration-none">&larr; Voltar para a Central de Dicas</a>
             </div>
 
           </div>
@@ -74,12 +74,12 @@
       </div>
     </section>
 
-    <!-- BLOCO: Rodapé Modular (Carregado via JS) -->
+    <!-- BLOCO: Rodapé Modular -->
     <div id="footer-placeholder"></div>
 
   </main>
 
-  <!-- Scripts de Carregamento Modular com Correção de Caminho das Imagens do Rodapé -->
+  <!-- Scripts de Carregamento Modular -->
   <script>
     function loadComponent(id, file, callback) {
       fetch(file)
@@ -94,10 +94,8 @@
         .catch(error => console.error(error));
     }
 
-    // Carrega o header e o footer ajustando os caminhos relativos internos das imagens/links se necessário
     loadComponent('header-placeholder', '../../components/header.html');
     loadComponent('footer-placeholder', '../../components/footer.html', function() {
-      // Garante que qualquer imagem ou link do rodapé carregado via componente aponte para a raiz correta
       const footerImages = document.querySelectorAll('#footer-placeholder img');
       footerImages.forEach(img => {
         const src = img.getAttribute('src');
