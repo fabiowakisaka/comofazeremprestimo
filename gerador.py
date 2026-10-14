@@ -162,18 +162,50 @@ os.makedirs(caminho_pasta, exist_ok=True)
 with open(f"{caminho_pasta}/index.html", "w", encoding="utf-8") as f:
     f.write(html_final)
 
-# 8. Atualização Automática do Sitemap (`sitemap.xml`)
-sitemap_path = "sitemap.xml"
-if os.path.exists(sitemap_path):
-    with open(sitemap_path, "r", encoding="utf-8") as f:
-        sitemap_content = f.read()
-else:
-    sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>'
+# 8. Varredura Global Automática do Sitemap (Sitemap Crawler)
+dominio_base = "https://www.comofazeremprestimo.com"
+urls_encontradas = []
 
-if url_completa not in sitemap_content:
-    nova_url_xml = f'  <url>\n    <loc>{url_completa}</loc>\n    <lastmod>{data_hoje_iso}</lastmod>\n  </url>\n</urlset>'
-    sitemap_content = sitemap_content.replace('</urlset>', nova_url_xml)
-    with open(sitemap_path, "w", encoding="utf-8") as f:
-        f.write(sitemap_content)
+# Varre o diretório à procura de index.html e páginas html principais
+for root, dirs, files in os.walk("."):
+    # Ignora pastas ocultas como .git e .github
+    if ".git" in root or ".github" in root or "assets" in root or "vendors" in root or "components" in root:
+        continue
+    
+    for file in files:
+        if file.endswith(".html"):
+            caminho_relativo = os.path.join(root, file).replace("\\", "/")
+            
+            # Converte o caminho do arquivo para URL amigável
+            if caminho_relativo == "./index.html":
+                url = f"{dominio_base}/"
+            elif file == "index.html":
+                # Remove o './' inicial e o '/index.html' final para virar uma pasta limpa com barra
+                limpo = caminho_relativo.replace("./", "").replace("/index.html", "/")
+                url = f"{dominio_base}/{limpo}"
+            else:
+                # Páginas soltas (ex: simulador.html)
+                limpo = caminho_relativo.replace("./", "")
+                url = f"{dominio_base}/{limpo}"
+            
+            urls_encontradas.append(url)
 
-print(f"Sucesso: Artigo gerado em {caminho_pasta} com ícones e sem AdSense.")
+# Remove duplicadas e ordena para manter o sitemap limpo
+urls_encontradas = sorted(list(set(urls_encontradas)))
+
+# Constrói o XML do Sitemap do zero com todas as páginas ativas
+sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+
+for u in urls_encontradas:
+    sitemap_xml += '  <url>\n'
+    sitemap_xml += f'    <loc>{u}</loc>\n'
+    sitemap_xml += f'    <lastmod>{data_hoje_iso}</lastmod>\n'
+    sitemap_xml += '  </url>\n'
+
+sitemap_xml += '</urlset>'
+
+with open("sitemap.xml", "w", encoding="utf-8") as f:
+    f.write(sitemap_xml)
+
+print(f"Sucesso: Artigo gerado em {caminho_pasta}. Sitemap global reconstruído com {len(urls_encontradas)} URLs indexadas.")
